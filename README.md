@@ -179,7 +179,7 @@
    * B+-Tree(Mysql中用)见图    
    ![B+-Tree结构图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/B%2B-Tree%E7%BB%93%E6%9E%84%E5%9B%BE.png "B+-Tree结构图")
    
-        B+是B的辩题,基本定义与B树相同,除了:  
+        B+是B的变体,基本定义与B树相同,除了:  
         非叶子节点的子树指针与关键字个数相同:可以存更多关键字,树更矮  
         非叶子节点的子树指针P[i],指向关键字[K[i],K[i+1])的子树.  
         非叶子节点仅用来索引,数据都保存在叶子节点中:非叶子节点只能用来存索引,指针,意味着B+-Tree可以存更多的索引,可以变得更矮.所有的搜索都在叶子节点中终结.  
