@@ -229,5 +229,30 @@
            xxx.ibd是InnoDB下索引与数据的存储文件.  
            xxx.MYI是MyISAM下存储索引的文件.  
            xxx.MYD是MyISAM下存储数据的文件.  
+    
+   
+   * 衍生出来的问题,以mysql为例:  
 
+   * 如何定位并优化慢查询sql  
+   
+		1. 根据慢日志定位查询慢sql  
+			在my.ini(windows环境下)配置文件里修改慢日志的一些参数.  
+			一条sql查询时间超过1s就是慢的.  
+			一旦mysql重启,慢sql日志就会被清零.  
+			
+		2. 用explain来分析慢sql   
+		   在查询语句的前面加上explain即可.  
+		   Explain关键字段:  
+		   id字段:  指查询顺序,在复合查询里面,id越大的越先执行.  
+		   type字段:    
+		   	system > const > eq_ref > ref > fulltext > ref_or_null > index_merge > unique_subquery > index_subquery > range > index > all  
+		    当type是index/all时,意味着sql进行了全表扫描,需要优化.  
+		   extra字段:  
+		   	extra中出现以下2项意味着MYSQL根本不能使用索引,效率会受到重大影响,需要优化:  
+		   	Using filesort--表示MYSQL会对结果使用一个外部索引排序,而不是使用本表的索引,可能在内存或者磁盘上进行排序.MYSQL中无法利用索引完成的排序操作称为"文件排序".  
+		   	Using temporary--表示MYSQL在对查询结果排序时使用临时表,常见于排序order by 和 分组查询group by  
+		   	
+		3. 修改sql或者尽量让sql走索引  
+			EXPLAIN SELECT COUNT(id) FROM `repayment` ORDER BY create_time DESC; 查询时没有走主键索引,而是根据查询优化来选择走哪个索引.   
+			EXPLAIN SELECT COUNT(id) FROM `repayment` ORDER BY create_time DESC force index(primary)强制用主键索引. 
    
