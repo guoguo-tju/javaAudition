@@ -27,19 +27,25 @@
 <br>
 
    <h3 id="TCP的三次握手">TCP的三次握手</h3>  
-    TCP是属于传输层的协议,抓包的工具Wireshark  
+   
+   TCP是属于传输层的协议,抓包的工具Wireshark  
+    
    * 三次握手的流程如下:  
    1) 第一次握手,建立连接时,客户端发送SYN包(syn=j)到服务器,并进入SYN_SEND状态,等待服务器确认;  
    2) 第二次握手,服务器收到SYN包,必须确认客户的SYN,同时自己也发送一个SYN包(syn=k),即SYN+ACK(ack=j+1)包,此时服务器进入SYN_RECV状态.  
-   3) 第三次握手,客户端收到服务器的SYN+ACK包,向服务器发送确认包ACK(ack=k+1),此包发送完毕,客户端和服务器进入ESTABLISHED状态,完成三次握手.      
+   3) 第三次握手,客户端收到服务器的SYN+ACK包,向服务器发送确认包ACK(ack=k+1),此包发送完毕,客户端和服务器进入ESTABLISHED状态,完成三次握手.
+         
    * 为什么需要三次握手才能建立起连接?   
-     为了初始化Sequence Number的初始值(即上面的j和k),以保证信息传输过程中不会乱序.所以在服务器发送了Sequence Number后(第二次握手),需要客户端发送确认报文给服务器,告知已收到其初始化的Sequence Number了.    
+     为了初始化Sequence Number的初始值(即上面的j和k),以保证信息传输过程中不会乱序.所以在服务器发送了Sequence Number后(第二次握手),需要客户端发送确认报文给服务器,告知已收到其初始化的Sequence Number了.
+         
    * 首次握手的隐患--SYN超时问题  
-     Server收到Client的SYN,回复SYN-ACK的时候未收到ACK确认.Server会不断重试直至超时,Linux默认重试5次,每次等待时间翻倍(2+4+8+16+32),总共等待63秒才断开连接.会是server招到SYN Flood攻击,将服务器的连接数耗尽,不能处理正常的连接请求.      
+     Server收到Client的SYN,回复SYN-ACK的时候未收到ACK确认.Server会不断重试直至超时,Linux默认重试5次,每次等待时间翻倍(2+4+8+16+32),总共等待63秒才断开连接.会是server招到SYN Flood攻击,将服务器的连接数耗尽,不能处理正常的连接请求.
+           
    * Liunx下针对SYN Flood的防护措施:   
      SYN队列满后,Server会通过TCP的一个特殊的tcp_syncookies参数(请求地址+目标地址+时间戳组成)会发SYB Cookie,若为正常连接Client是会有响应的,会回发SYN Cookie,在即使SYN队列满的情况下,也能建立连接.  
           
    <h3 id="TCP的四次挥手(断开时)">TCP的四次挥手(断开时)</h3>  
+   
    * 第一次挥手:Client发送一个FIN,用来关闭Client到Server的数据传送,Client进入FIN_WAIT_1状态;  
    * 第二次挥手:Server收到FIN后,发送一个ACK给Client,确认序号为收到序号+1(与SYN相同,一个FIN占用一个序号,Server进入CLOSE_WAIT状态);  
    * 第三次挥手:Server发送一个FIN,用来关闭Server到Client的数据传送,Server进入LAST_ACK状态;  
@@ -50,15 +56,18 @@
      Client关闭socket连接,Server没有及时关闭连接,可能情况:1)缺少一些释放资源的代码; 2)处理请求的线程配置不合理.  
      
    <h3 id="TCP的滑动窗口">TCP的滑动窗口</h3>  
+   
    * RTT: 发送一个数据包到收到对应的ACK,锁花费的时间.   
    * RTO: 重传的时间间隔,是根据RTT的值动态计算的.   
    * TCP传输过程中是把数据分为一段一段传输的,我们不能上一段被确认之后再发送下一段.要批量的发送,就要解决可靠传输和包乱序的问题. TCP使用滑动窗口做流量控制与乱序重排.
      
-   <h3 id="超文本传输协议HTTP">超文本传输协议HTTP</h3>   
-     1.1相比1.0 : 引入keep-alive机制.以前是close
-     若为close,是服务器主动关闭连接,若为keep-alive,则连接会保持一段时间不会立刻关闭,在此期间还可以数据传输.      
+   <h3 id="超文本传输协议HTTP">超文本传输协议HTTP</h3>  
+    
+   1.1相比1.0 : 引入keep-alive机制.以前是close
+   若为close,是服务器主动关闭连接,若为keep-alive,则连接会保持一段时间不会立刻关闭,在此期间还可以数据传输.      
      
    <h3 id="在浏览器键入url,按下回车之后经历的流程">在浏览器键入url,按下回车之后经历的流程</h3> 
+   
    1) 会依据url逐层查询DNS缓存,解析url中的域名对应的ip地址. 浏览器缓存-->系统缓存-->路由器缓存-->服务器缓存  
    2) 根据ip地址和端口(默认80)与服务器建立TCP连接  
    3) 浏览器发送http请求  
@@ -67,19 +76,21 @@
    6) 浏览器释放TCP连接,四次挥手   
      	
    <h3 id="HTTP状态码">HTTP状态码</h3> 
-   	1xx: 指示信息--表示请求已接收,继续处理  
-   	2xx: 成功--表示请求已被成功接收  
-   	3xx: 重定向--要完成请求必须进行进一步转发  
-   	4xx: 客户端错误--请求有语法错误或请求无法实现  
-   	5xx: 服务端错误--服务端未能实现合法的请求  
-   	400 Bad Request: 客户端有语法错误,不能被服务器所理解  
-   	401 Unauthorized: 请求未经授权,这个状态码必须和www-Authenticate报头域一起使用.  
-   	403 Forbidden: 服务器接收到请求,但是由于某些原因(ip被禁)拒绝提供服务.  
-   	404 NOT FOUND: 请求资源不存在,输入了错误的url.  
-   	500 Internal Server Error: 服务器内部发生不可逾期的错误(代码写的有问题)  
-   	503 Server Unavaiable : 服务器当前不能处理客户端请求(比如连接池占用满了),一段时间后可能恢复正常    
+   
+   1xx: 指示信息--表示请求已接收,继续处理  
+   2xx: 成功--表示请求已被成功接收  
+   3xx: 重定向--要完成请求必须进行进一步转发  
+   4xx: 客户端错误--请求有语法错误或请求无法实现  
+   5xx: 服务端错误--服务端未能实现合法的请求  
+   400 Bad Request: 客户端有语法错误,不能被服务器所理解  
+   401 Unauthorized: 请求未经授权,这个状态码必须和www-Authenticate报头域一起使用.  
+   403 Forbidden: 服务器接收到请求,但是由于某些原因(ip被禁)拒绝提供服务.  
+   404 NOT FOUND: 请求资源不存在,输入了错误的url.  
+   500 Internal Server Error: 服务器内部发生不可逾期的错误(代码写的有问题)  
+   503 Server Unavaiable : 服务器当前不能处理客户端请求(比如连接池占用满了),一段时间后可能恢复正常    
    	
    <h3 id="GET请求和POST请求的区别">GET请求和POST请求的区别</h3> 
+   
    1. HTTP报文层面:  
      GET将请求信息放在url中,POST放在请求体中,所以POST请求没有长度限制,GET请求会有一些长度限制.  
    2. 数据库层面:  
@@ -100,7 +111,8 @@
    * 区别:  
     Cookie数据存放在浏览器上,Session数据存放在服务器上.所以Cookie数据不安全,容易被认为使用造假进行Cookie欺骗,Session相对安全 . 考虑到减轻服务器负担推荐使用Cookie.
        
-   <h3 id="HTTP和HTTPS的区别">HTTP和HTTPS的区别</h3>   
+   <h3 id="HTTP和HTTPS的区别">HTTP和HTTPS的区别</h3>  
+    
    * HTTPS:  
      在HTTP下加了一层SSL(Sercurity Sockets Layer,安全套接层,SSL3.0后更名为TLS),对传输信息进行加密.      
    
@@ -127,7 +139,8 @@
 <br>
    
    <h3 id="如何设计一个关系型数据库">如何设计一个关系型数据库</h3>   
-   ![设计一个数据库](https://raw.githubusercontent.com/guoguo-tju/DesignPattern/master/src/main/resources/picture/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.png?t=1 "设计一个数据库")
+   
+   ![设计一个数据库](https://raw.githubusercontent.com/guoguo-tju/DesignPattern/master/src/main/resources/picture/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.png?t=1 "设计一个数据库")  
    分为两部分:  
    		存储部分:将数据通过I/O持久化到磁盘上.I/O持久化是数据库速度的瓶颈,所以我们需要程序实例部分对存储部分进行管理和优化.  
    		程序实例:  
