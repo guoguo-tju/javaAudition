@@ -262,6 +262,16 @@
   	  一个事务一旦提交它对数据库的修改应该永久性的保存在数据库中,即当数据库发生故障时,确保已经提交的事务不能丢失.
 
   事务隔离级别以及各级别下的并发访问问题:
+    事务并发访问可能引起的问题:
+     1.更新丢失--mysql的InnoDB引擎有很多的事务隔离级别,使得在数据库层面可可以避免
+     2.脏读:一个事务读到另一个事务未提交的更新数据. --READ-COMMITTED已提交读事务隔离级别上可以避免,Oracle默认的事务隔离级别READ-COMMITTED
+        select @@tx_isolation;     // 	查看事务的隔离级别
+        set session transaction isolation level read uncommitted;   // 设置当前session级别为读未提交
+     3.不可重复读: 事务a多次读取同一数据,事务b在事务a多次读取的过程中做了更新提交,使a多次读取时结果不一致.
+     --REPEATABLE-READ可重复读事务隔离级别以上可以避免,Mysql的InnoDB默认事务隔离级别REPEATABLE-READ
+     4.幻读: 事务a读取与搜索条件相匹配的若干行,事务b以插入或者删除行来修改事务a的结果集,导致事务a再执行当前读操作,出现幻行(比如原来读共有3行,然后全局update,竟然更新了4行).
+     --SERIALIZABLE串行事务隔离级别可以避免.
+
 
 
 
