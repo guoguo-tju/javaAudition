@@ -254,7 +254,7 @@
   数据库事务的四大特性:  ACID
   	原子性(Atomic):
   	  事务包含的所有操作要么全部执行,要么全部不执行.
-  	一致性(Consistency):
+  	一致性(Consistency)
   	  事务应确保数据库状态从一个一致的状态转变为另外一个一致的状态, 比如A和B无论怎么转账,两者的金额之和不变.
   	隔离性(Isolation):
       多个事务并行执行时,一个事务的执行不能影响其他事务的执行.
@@ -273,5 +273,56 @@
      --SERIALIZABLE串行事务隔离级别可以避免.
 
 
+
+
+  Mysql的RR隔离级别下能避免幻读的底层原因:
+  next-key锁:
+
+    Gap锁: 锁一定范围间隙内的数据,比如delete,id=9的数据(未命中),此时你插入id=10,就会因为gap锁而失效.
+    RR以及Seriaizable隔离级别下,默认都支持gap锁.
+
+    Gap锁的触发?
+     如果where条件全部命中,则不会用Gap锁,只会加记录所锁,就能保障不幻读.
+     如果where条件部分命中或者全不命中,则会增加Gap锁.
+    Gap锁会用在非唯一索引或者不走索引的当前读.比如delete,id=9(id非唯一索引),此时会触发Gap锁,锁住(6,9],(9,11]的区间(临界点也与主键的值有关),此时另一个session想要插入id=9的数据会失败,直到该事务提交或者回滚.防止了幻读.不然会出现delete前只有一条,delete完之后有两条数据被删除的情况.不走索引的情况,会触发所有的Gap锁,这样比全表锁的效率更低,因此要避免这种情况.
+
+  复杂的sql语句写法:
+  	group by / having
+  	统计相关: COUNT , SUM , MAX , MIN , AVG
+
+  	group by
+  	1. 满足 "select子句中的列名必须为group by里用到的列或者sum,min等列函数的列"只针对同一张表成立,联查时不成立.
+  	2. 列函数对于group by 子句定义的每个组各返回一个结果.
+  	group by会把结果集缓存在一张临时表里,然后再通过统计函数对这些结果集进行统计,再展现出来.
+
+  	having
+  	1. 通常与group by子句一起使用 , 没有groupby,having与where作用相同.
+  	2. where过滤行,having过滤组
+  	3. 出现在同一sql的顺序: where > group by > having
+
+  	查询平均成绩大雨60分的同学的学号和平均成绩:
+  	select
+  		student_id , avg(score)
+	from score
+	group by student_id
+	having avg(score) > 60 ;
+
+  	查询没有学全所有课的同学的学号,姓名:
+  	select
+  		stu.student_id,
+  		stu.name
+  	from student stu, score s
+  	where stu.student_id = s.student_id
+  	group by student_id
+  	having count(*) >
+  	( select count(*) from course ) ;
+
+  学习一下数据库的理论范式.
+
+  面试的三层架构:
+  	两轮技术面 + 领导(/hr)面
+  	首轮: 面试技术基本功
+  	次轮: 架构设计,通过技术解决某些场景下的问题(可能要画图)
+  	末轮: 稳定性以及未来规划,压工资
 
 
