@@ -479,6 +479,27 @@
         redis会依据操作系统的不同选用不同的多路复用函数(epoll,kqueue,evport,select),优先选择时间复杂度为O(1)的I/O多路复用函数,如果没有就选择时间复制读为O(n)的select作为保底.  
 
 
+   <h3 id="说说你用过的Redis的数据类型">说说你用过的Redis的数据类型</h3>  
+   
+   1. String : 最常用的key-value形式 , value最大存512M的数据,二进制安全(可以存JPEG图像,序列化的对象)   
+            redis中每一个操作都是原子性的,所以可以不用考虑并发性,用incr来计数.例如:想统计用户每天访问网站的次数,可以用userId+日期作为key,每次用户访问,redis就执行一次incr来计数.   
+   2. Hash : String类型的field-value的映射,适合用于存储对象.   
+            创建一个lilei的映射 : hmset lilei name "LiLei" age 26 title "Senior"   
+            查name字段 :  hget lilei age   
+            修改title字段 : hset lilei title "Pricipal"    
+   3. List : 按照String元素插入顺序排序 , 后进先出(类似于stack,实现最新消息排行榜等功能) , 可存40亿数据    
+            给mylist中插入数据 : lpush mylist aaa   
+            查看mylist中数据 : lrange mylist 0 10  (从左往右取出第0位到第10位)   
+   4. Set : String元素组成的无序集合 , 通过hash实现(所以查找,新增,删除一个元素的时间复杂度是O(1)),不允许重复.   
+            添加元素 : sadd myset 111   
+            查看myset中的元素 : smembers myset   
+          redis可以求出两个集合的交集并集差集等功能,实现共同关注,共同喜好等功能.   
+   5. Sorted Set : String元素的有序不重复集合,每个元素对应一个分数,通过分数来为集合中成员从小到大排序.   
+            给zset中添加元素 : zadd myset 3 abc  (添加时指定元素对应的分数)  
+            查看zset中数据 : zrangebyscore myzset 0 10  (从左往右取出第0位到第10位)   
+           用Sorted Set来做带权重的队列,比如普通消息的score为1 , 重要消息的score为2 , 工作线程也可按工作的大小获取消息,让重要的任务优先执行.   
+   6. 除了以上5个常用的以外,还有用于计数的HyperLogLog , 用于支持存储地理位置信息的Geo.  
+
    
 
   	
