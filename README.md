@@ -495,6 +495,76 @@
             查看zset中数据 : zrangebyscore myzset 0 10  (从左往右取出第0位到第10位)   
            用Sorted Set来做带权重的队列,比如普通消息的score为1 , 重要消息的score为2 , 工作线程也可按工作的大小获取消息,让重要的任务优先执行.   
    6. 除了以上5个常用的以外,还有用于计数的HyperLogLog , 用于支持存储地理位置信息的Geo.  
+   
+  
+   <h3 id="从海量key里查出某一固定前缀的key">从海量key里查出某一固定前缀的key</h3>   
+      
+   1. 要先问清数据规模,问清边界.  
+   2. keys pattern : 查找出符合给定模式pattern的key.  
+            keys k1*   
+            keys指令一次性返回所有匹配的key,key的数量过大会使服务卡顿.   
+   3. 若redis正在给线上提供服务,使用keys指令会有什么问题?   
+           会使redis服务卡顿   
+   4. 用SCAN指令,无阻塞地提取key列表:   
+            SCAN cursor(游标) [MATCH pattern] [COUNT count]       
+            
+         1. 基于游标的迭代器,需要基于上一次的游标延续之前的迭代过程.返回值:当前遍历到的游标,以及查询到的数据.  
+         2. 以0作为游标开始新的迭代,直到命令返回游标0完成一次遍历.  
+         3. 不保证每次执行都返回某个给定数量的元素,支持模糊查询.  
+         4. 一次返回的数量不可控,只能是大概率符合count参数.  
+            例如:  
+            scan 0 match k1* count 10    :   开始迭代,返回匹配k1的数据,期望返回10条.cursor为0表示刚开始迭代.  
+            返回值:  
+            1)"115379"					游标  
+            2)1) "k1323454"				匹配到的key  
+              2) "k1454365"  
+              3) "k1546763"  
+            scan 115379 match k1* count 10    :  将查询到的cursor再次传入redis查询  
+            可能会获取到重复的key,需要我们在外部去重,比如将查询到的结果放入HashSet里面.  
+            代码参考 : https://blog.csdn.net/zhxdick/article/details/78268027
+
+   <h3 id="如何通过redis实现分布式锁">如何通过redis实现分布式锁</h3>   
+   
+   * 分布式锁:控制分布式系统或者不同系统之间共同访问共享资源的锁的实现.     
+        * 互斥性   
+        * 安全性 : 锁只能被持有该锁的客户端删除,不能被其他客户端删除.   
+        * 死锁 : 获取锁的客户端,因为某些原因宕机,而未能释放锁,其他客户端无法获取该锁而导致死锁.   
+        * 容错 : 部分redis节点宕机之后,客户端仍然能够获取锁及释放锁.  
+
+   * 如何实现:   
+        * 一种思路(有问题):   
+                用 setnx key value , 如果key不存在,set成功,返回值为1,如果key存在,set失败,返回值为0.当返回值是1时,用expire给key设定一个时间,并进行task任务,当返回值是0时,表示该资源被占用,不进行task任务.   
+                伪代码:   
+                <pre>
+                    long status = redisService.setnx(key , "1");   
+                    if(status = 1){   
+                        redisService.expire(key , expireTime);
+                        // 执行占用资源的逻辑.
+                        doTask();
+                    }
+                </pre>
+                这里的问题是: setnx与expire不是原子性的,如果setnx完之后程序挂了来不及expire,那么资源会被一直锁上,别的程序无法使用.   
+
+        * 另一个思路:   
+                通过 set key value [EX seconds] [PX millseconds] [NX|XX] ,原子性操作   
+                    EX second : 设置过期时间为second秒.   
+                    PX millsecond : 设置键的过期时间为millsecond毫秒.   
+                    NX : 只在键不存在时,才对键进行设置操作   
+                    XX : 只在键已经存在时,才对键进行设置操作.  
+                    SET操作成功完成后,返回OK,否则返回nil.  
+                伪代码:  
+                <pre>
+                    String result = redisService.set(lockKey , requestId , SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME , expireTime);
+                    if ("OK".equals(result)){
+                        // 执行占用资源的逻辑.
+                        doTask();
+                    }
+                </pre>   
+                
+   * 大量的key同时过期的注意事项:   
+        key集中过期,redis清除大量key会很耗时,出现短暂卡顿现象.   
+        解决方案: 在设置key的过期时间时,给key加上一个随机值.避免集中过期.   
+
 
    
 
