@@ -34,7 +34,11 @@
 * [为什么Redis这么快](#为什么Redis这么快)
 * [说说你用过的Redis的数据类型](#说说你用过的Redis的数据类型)
 * [从海量key里查出某一固定前缀的key](#从海量key里查出某一固定前缀的key)
-* [如何通过redis实现分布式锁](#如何通过redis实现分布式锁)
+* [如何使用Redis做异步队列](#如何使用Redis做异步队列)
+* [Redis如何做持久化](#Redis如何做持久化)
+* [使用Pipeline的好处](#使用Pipeline的好处)
+* [Redis的读写分离同步机制](#Redis的读写分离同步机制)
+* [如何将不同的key均匀放在不同的redis集群节点](#如何将不同的key均匀放在不同的redis集群节点)
 
 
 
@@ -594,20 +598,21 @@
          
    * RDB(快照持久化): 保存某个时间点的全量数据快照.    
    
-        * 配置:在redis.conf文件中:    
-          1.    
-         save 900 1    (在900s之内有1条写入就备份)    
-         save 300 10   (在300s之内有10条写入就备份)    
-         save 60 10000	(在60s之内有10000条写入就备份)    
-         reids每个时段的读写请求都是不同的,为了平衡性能和数据安全的需要,需要根据自身redis得到情况进行合理配置多种策略.    
+        * 配置:在redis.conf文件中:   
          
-        2.    
-         stop-writes-on-bgsave-error yes    
-         当备份进程出错时,主进程就停止写入操作,为了保障持久化数据一致性的问题.    
-        3.   
-         rdbcompression no    
-         在备份时,将rdb文件做压缩之后再缓存.建议关闭,因为带来更多CPU消耗.    
-         备份文件保存在redis根目录的src文件下,dump.rdb.   
+            1.    
+             save 900 1    (在900s之内有1条写入就备份)    
+             save 300 10   (在300s之内有10条写入就备份)    
+             save 60 10000	(在60s之内有10000条写入就备份)    
+             reids每个时段的读写请求都是不同的,为了平衡性能和数据安全的需要,需要根据自身redis得到情况进行合理配置多种策略.    
+             
+            2.    
+             stop-writes-on-bgsave-error yes    
+             当备份进程出错时,主进程就停止写入操作,为了保障持久化数据一致性的问题.    
+            3.   
+             rdbcompression no    
+             在备份时,将rdb文件做压缩之后再缓存.建议关闭,因为带来更多CPU消耗.    
+             备份文件保存在redis根目录的src文件下,dump.rdb.   
    
         * 主动触发持久化指令:       
          SAVE:阻塞Redis的服务进程,直到RDB文件被创建完毕.    
@@ -675,7 +680,7 @@
    写操作在master上进行,读操作在slave上进行.   
    *  主从同步: 最终一致性
    		*	全量同步的过程:  
-   				1. 主节点做一次bgsave,并同时将后续修改操作记录到内存buffer.   
+   			    1. 主节点做一次bgsave,并同时将后续修改操作记录到内存buffer.   
    				2. 主节点完成后将rdb文件全量同步到从节点.从节点加载rdb文件.  
    				3. 从节点加载完成后,再通知主节点将期间增量数据同步到从节点上.   
    
@@ -701,7 +706,7 @@
    		这个保证不了，有这种強一致的需求的话建议还是从主库读，毕竟都会有延迟的。或者用dbproxy框架，有些dbproxy框架会把刚写进去又读的放到一个mysql connection里，这样来保证读写一致。   
    
    
-   <h3 id="如何将不同的key均匀放在不同的redis集群节点"></h3>     
+   <h3 id="如何将不同的key均匀放在不同的redis集群节点">如何将不同的key均匀放在不同的redis集群节点</h3>     
    
    * redis集群:   
    将不同的key通过某个规则分散存储在多个redis节点上,即数据分片.redis-client采用无中心结构,每个节点都和其他节点连接,采用Gossip协议传播信息和发现新的节点.
@@ -713,15 +718,20 @@
        		  	* 对2^32取模,将哈希值空间组成虚拟的圆环.按顺时针组织,圆环的正上方为0,0点右侧的第一个点为1,0点左侧的第一个点为(2^32-1)
        		  	* 选用服务的ip或者主机名作为关键字,来进行hash,来确定每台服务器在hash环上的位置.将key采用与服务器相同的hash函数来计数hash,确定key在环上的位置,然后顺时针行走第一个遇到的节点即为目标存储服务器. (见图)
        		  	
-       		    ![用key计算在环上的位置.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/InnoDB%E4%B8%8EMyISAM.png "用key计算在环上的位置.png")
+       		    ![用key计算在环上的位置.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%94%A8key%E8%AE%A1%E7%AE%97%E5%9C%A8%E7%8E%AF%E4%B8%8A%E7%9A%84%E4%BD%8D%E7%BD%AE.png "用key计算在环上的位置.png")
        		    
        		  	* 好处: 对服务器的增减只需重新定位一小段数据.比如C宕机,只有C那段数据会受影响,C段的数据会重新定位到D上. 新增服务器,同理.
    
-       		*  哈希环的数据倾斜问题: 见图    
+       		*  哈希环的数据倾斜问题: (见图)    
        		  	* 在节点很少时会因为节点分布不均匀而造成大量数据集中缓存到某一台服务器上.    
-   
-       		*  引入虚拟节点解决数据倾斜问题: 见图  
-       		  	* 为每台服务器计算虚拟节点,均匀分布到环上,多了一步虚拟节点到实体节点的映射,数据定位算法不变.这样相对较少的数据节点也能实现数据的均匀分布.
+       		  	
+                ![哈希环的数据倾斜问题.png.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%93%88%E5%B8%8C%E7%8E%AF%E7%9A%84%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "哈希环的数据倾斜问题.png.png")
+                
+       		*  引入虚拟节点解决数据倾斜问题: (见图)  
+       		
+       		    ![引入虚拟节点解决数据倾斜问题.png.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%BC%95%E5%85%A5%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%E8%A7%A3%E5%86%B3%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "引入虚拟节点解决数据倾斜问题.png.png")
+       		
+       		    * 为每台服务器计算虚拟节点,均匀分布到环上,多了一步虚拟节点到实体节点的映射,数据定位算法不变.这样相对较少的数据节点也能实现数据的均匀分布.
        		  	* 实际应用中将虚拟节点设置为32.  
    
 
