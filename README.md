@@ -30,7 +30,7 @@
 * [InnoDB可重复读隔离级别在如何避免幻读](#InnoDB可重复读隔离级别在如何避免幻读)
 
 ### 缓存知识考点
-* [缓存中间件:Memcache和redis的区别](#缓存中间件:Memcache和redis的区别)
+* [缓存中间件Memcache和redis的区别](#缓存中间件Memcache和redis的区别)
 * [为什么Redis这么快](#为什么Redis这么快)
 * [说说你用过的Redis的数据类型](#说说你用过的Redis的数据类型)
 * [从海量key里查出某一固定前缀的key](#从海量key里查出某一固定前缀的key)
@@ -39,6 +39,12 @@
 * [使用Pipeline的好处](#使用Pipeline的好处)
 * [Redis的读写分离同步机制](#Redis的读写分离同步机制)
 * [如何将不同的key均匀放在不同的redis集群节点](#如何将不同的key均匀放在不同的redis集群节点)
+
+### Linux
+* [Linux的体系结构](#Linux的体系结构)
+* [查找特定的文件](#查找特定的文件)
+* [根据文件内容去筛选](#根据文件内容去筛选)
+* [对文件内容做统计](#对文件内容做统计)
 
 
 
@@ -460,7 +466,7 @@
 
    缓存穿透 : 要查的数据缓存里没有,去数据库里查,然后回写存储在缓存层.
 
-   <h3 id="缓存中间件:Memcache和redis的区别">缓存中间件:Memcache和redis的区别</h3>  
+   <h3 id="缓存中间件Memcache和redis的区别">缓存中间件Memcache和redis的区别</h3>  
     
    Memcache :
    1. 支持简单数据类型
@@ -745,7 +751,7 @@
 
    <h3 id="Linux的体系结构">Linux的体系结构</h3>      
  
-   ![引入虚拟节点解决数据倾斜问题.png.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%BC%95%E5%85%A5%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%E8%A7%A3%E5%86%B3%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "引入虚拟节点解决数据倾斜问题.png.png")   
+   ![Linux的体系结构.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/Linux%E7%9A%84%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.png "Linux的体系结构.png")   
    
    * 体系结构分为用户态和内核态:
 		* 内核: 本质是一段管理计算机硬件设备的程序.
@@ -756,7 +762,7 @@
 		     echo $SHELL  --查看当前版本的shell     
 		     cat /etc/shells  --查看本机器支持的shell版本   
 		     
-   <h3 id="如果查找特定的文件">如果查找特定的文件</h3>   
+   <h3 id="查找特定的文件">查找特定的文件</h3>   
 
    * 语法: find path [options] params
 	    
@@ -768,7 +774,7 @@
 	     cd ./karl   "./"代表当前目录下     
 	     cd  /karl   "/"代表根目录下   
  
-   <h3 id="如果根据文件内容去筛选">如果根据文件内容去筛选</h3>     
+   <h3 id="根据文件内容去筛选">根据文件内容去筛选</h3>     
 
    * 语法: grep [options] pattern file  
 		* 作用: 查找文件里符合条件的字符串的行,支持正则表达式.    
