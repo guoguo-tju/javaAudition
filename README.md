@@ -734,6 +734,83 @@
        		    * 为每台服务器计算虚拟节点,均匀分布到环上,多了一步虚拟节点到实体节点的映射,数据定位算法不变.这样相对较少的数据节点也能实现数据的均匀分布.
        		  	* 实际应用中将虚拟节点设置为32.  
    
+   
+
+<br>
+
+<h2 id="Linux">Linux</h2>
+
+<br>
+   
+
+   <h3 id="Linux的体系结构">Linux的体系结构</h3>      
+ 
+   ![引入虚拟节点解决数据倾斜问题.png.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%BC%95%E5%85%A5%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%E8%A7%A3%E5%86%B3%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "引入虚拟节点解决数据倾斜问题.png.png")   
+   
+   * 体系结构分为用户态和内核态:
+		* 内核: 本质是一段管理计算机硬件设备的程序.
+		* 系统调用: 内核的访问接口,是一种不能再简化的原子性操作.
+		* 公用函数库: 系统调用的组合拳.
+		* shell: 本质是命令解释器,下通系统调用,上通应用程序.   
+			 比如:ls -lrt --> 在默认路径下找到ls的执行文件,并且将附带参数-lrt传入这个文件里面执行.   
+		     echo $SHELL  --查看当前版本的shell     
+		     cat /etc/shells  --查看本机器支持的shell版本   
+		     
+   <h3 id="如果查找特定的文件">如果查找特定的文件</h3>   
+
+   * 语法: find path [options] params
+	    
+	    1. find ~ -name "target.java"     --在用户目录下查找文件(~可省略)
+	    2. find / -name "target.java"     --在根目录下查找文件
+	    3. find ~ -name "target.java"     --模糊查找文件
+	    4. find ~ -iname "target*"        --不区分文件名大小写去查找文件.    
+
+	     cd ./karl   "./"代表当前目录下     
+	     cd  /karl   "/"代表根目录下   
+ 
+   <h3 id="如果根据文件内容去筛选">如果根据文件内容去筛选</h3>     
+
+   * 语法: grep [options] pattern file  
+		* 作用: 查找文件里符合条件的字符串的行,支持正则表达式.    
+	    * grep "java" target*   --查找target打头的文件夹下的包含java文本的行    
+
+   * 管道操作符 |  
+	    * 作用: 可将指令连接起来,前一个指令的输出作为后一个指令的输入   
+	    * find ~ | grep "target"   --将"find ~"的输出结果作为grep "target"的输入参数.即在home下所有文件名查包含target的文件. 相当于 find ~ -name "target*"
+	    * 管道注意的要点:   
+	    	1. 只处理前一个命令正确输出,不处理错误输出.
+	    	2. 右边命令必须能够接受标准输入流,否则传递过程中数据会被抛弃.
+	    	3. 常用的接收数据管道的命令: sed,awk,grep,cut,head,top,less,more,wc,join,sort,split等.    
+
+	    * 实现日志筛选功能 
+	       1. grep 'partial\[true\]' bsc-data.info.log     在log文件里查出"partial[true]"的日志([]需要转义)   
+	       2. grep -o 'engine\[[0-9a-z]*\]'   将-o上一步的输出结果作为输入结果,进一步筛出engine信息.    
+	       grep 'partial\[true\]' bsc-data.info.log | grep -o 'engine\[[0-9a-z]*\]'   
+	       3. grep -v "grep"        -v过滤掉包含"grep"的结果   
+	       grep 'partial\[true\]' bsc-data.info.log | grep -o 'engine\[[0-9a-z]*\]' | grep -v "grep" 
+
+   <h3 id="对文件内容做统计">对文件内容做统计</h3>   
+   
+   * 语法: awk [options] 'cmd' file     awk特别适合处理一些表格里的数据      
+        1. 一次读取一行文本,按输入分隔符进行切片,切成多个组成部分
+        2. 将切片直接保存在内建的变量中,$1,$2...($0表示行的全部)
+        3. 支持对单个切片的判断,支持循环判断,默认分隔符为空格  
+   * 例如:
+       1. awk '{print $1,$4}' netstat.txt      筛出文件里某些列的数据    
+    --netstat.txt文件中,将每一行数据按空格分片,过滤出每一行分片中第一片和第四片的信息.刷选文件可以是多个,只需按空格传入文件即可.
+       2. awk '$1=="tcp" && $2==1 {print $0}' netstat.txt       依据一些条件来筛选某些列   
+    --过滤出netstat.txt文件中满足每组分片,第一个分片="tcp"以及第二个分片="1"的信息.    
+       3. 如果想要过滤的信息中带有表头:  
+            NR==1 默认读取的数据行数是1       
+            awk '($1=="tcp" && $2==1) || NR==1 {print $0}' netstat.txt   
+       4. awk -F "," '{print $2}' test.txt   --  -F ","以","做为分隔符
+       5. awk '{enginearr[$1]++}END{for(i in enginearr)print i "\t" enginearr[i]}'   
+           对内容逐行统计操作,并列出统计结果.
+           定义一个数组enginearr[],用它的下标保存引擎的名字,一旦有相同名字名字的引擎出现,就在原来的基础上累加作为数组元素的值;END{}扫描结束后进行的操作,结束之后遍历enginearr数组,将数组下标和对应的值打印出来.得到engine的名称和其对应出现的次数.
+		      
+   * grep过滤数据形成一些表格化的数据,再由awk来处理.   
+          grep 'partial\[true\]' bsc-data.info.log | grep -o 'engine\[[0-9a-z]*\]' | awk '{enginearr[$1]++}END{for(i in enginearr)print i "\t" enginearr[i]}'          
+          统计了各种engine出现的次数.
 
 
 
