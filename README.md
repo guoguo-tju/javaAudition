@@ -47,6 +47,17 @@
 * [对文件内容做统计](#对文件内容做统计)
 
 
+### 消息队列
+* [为什么要引入消息中间件](#为什么要引入消息中间件)
+* [引入消息中间件之后会有哪些缺点](#引入消息中间件之后会有哪些缺点)
+* [如果消费者接收到消息,完成消息之前宕机怎么办?](#如果消费者接收到消息,完成消息之前宕机怎么办?)
+* [在某次高峰期间MQ中间件故障的情况下，触发了降级机制 ,  把核心数据写入本地磁盘文件 , 但运行一段时间就卡死 , 如果优化?](#在某次高峰期间MQ中间件故障的情况下，触发了降级机制 ,  把核心数据写入本地磁盘文件 , 但运行一段时间就卡死 , 如果优化?)
+* [如何保证消息中间件里的消息不会丢失? (消息的持久化)](#如何保证消息中间件里的消息不会丢失? (消息的持久化))
+* [如何保证消息中间件全链路数据100%不丢失](#如何保证消息中间件全链路数据100%不丢失)
+* [分析一下消费者手动ack机制保证消息不丢失的底层原理](#分析一下消费者手动ack机制保证消息不丢失的底层原理)
+* [消息中间件的生产端如何保证数据不丢失](#消息中间件的生产端如何保证数据不丢失)
+* [总结 : 消息中间件全链路100%数据不丢失 , 三个方面 : ](#总结 : 消息中间件全链路100%数据不丢失 , 三个方面 : )
+
 
 
 
@@ -878,7 +889,7 @@
 
     - 每一块内存区域设置的缓冲大小是512kb，系统接收到请求就写current缓冲区，但是current缓冲区总共就512kb的内存空间，因此一定会写满。current缓冲区写满之后，就会交换current缓冲区和ready缓冲区。交换过后，ready缓冲区承载了之前写满的512kb的数据。然后current缓冲区此时是空的，可以继续接着系统继续将新来的数据写入交换后的新的current缓冲区。
 
-      ![内存双缓冲机制](C:\Users\Administrator\Desktop\消息队列\内存双缓冲机制.png)
+      ![内存双缓冲机制](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_%E5%86%85%E5%AD%98%E5%8F%8C%E7%BC%93%E5%86%B2%E6%9C%BA%E5%88%B6.png)
 
     - 此时，后台线程就可以将ready缓冲区中的数据通过Java NIO的API，直接高性能append方式的写入到本地磁盘文件里。当然，这里后台线程会有一整套完善的机制，比如说一个磁盘文件有固定大小，如果达到了一定大小，自动开启一个新的磁盘文件来写入数据。
 
@@ -908,7 +919,7 @@
 
   - channel . 每个消费者从RabbitMQ获取消息的时候，都是通过一个channel的概念来进行的 , 这个channel就是进行数据传输的一个管道 .  delivery tag仅仅在一个channel内部是唯一标识消息投递的。所以说，你ack一条消息的时候，必须是通过接受这条消息的同一个channel来进行。
 
-    ![channel](C:\Users\Administrator\Desktop\消息队列\channel.png)
+    ![channel](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_channel.png)
 
   - 其实这里还有一个很重要的点，就是我们可以设置一个参数，然后就批量的发送ack消息给RabbitMQ，这样可以提升整体的性能和吞吐量。
 
@@ -927,7 +938,7 @@
 
   - **仓储服务处理失败时的消息重发** , 某个仓储服务实例处理某个消息失败了，此时会进入catch代码块 , 使用nack操作 , 通知RabbitMQ自己没处理成功消息，然后让RabbitMQ将这个消息再次投递给其他的仓储服务实例尝试去完成调度发货的任务。
 
-    ![try-catch代码](C:\Users\Administrator\Desktop\消息队列\try-catch代码.png)
+    ![try-catch代码](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_%E6%B6%88%E8%B4%B9%E8%80%85_try-catch%E4%BB%A3%E7%A0%81.png)
 
     
 
@@ -985,7 +996,7 @@
     - 一旦你开启了confirm模式之后，每次消息投递也同样是有一个delivery tag的，也是起到唯一标识一次消息投递的作用。这样，MQ回传ack给生产端的时候，会带上这个delivery tag。你就知道具体对应着哪一次消息投递了，可以删除这条消息。
     - 如果RabbitMQ接收到一条消息之后，结果内部出错发现无法处理这条消息，那么他会回传一个nack消息给生产端。此时你可以选择重新再次投递这条消息到MQ去。或者另一种情况，如果某条消息很长时间都没给你回传ack/nack，那可能是极端意外情况发生了，数据也丢了，你也可以自己重新投递消息到MQ去。
 
-  ![confirm机制代码](C:\Users\Administrator\Desktop\消息队列\confirm机制代码.png)
+  ![confirm机制代码](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_confirm%E6%9C%BA%E5%88%B6%E4%BB%A3%E7%A0%81.png)
 
   
 
