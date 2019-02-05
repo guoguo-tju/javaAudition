@@ -15,8 +15,6 @@ public class ClassLoaderTest {
         Class<?> c = m.loadClass("Robot");
         System.out.println(c.getClassLoader());
         Object o = c.newInstance();
-
-
     }
 
 }
