@@ -824,6 +824,267 @@
    * grep过滤数据形成一些表格化的数据,再由awk来处理.   
           grep 'partial\[true\]' bsc-data.info.log | grep -o 'engine\[[0-9a-z]*\]' | awk '{enginearr[$1]++}END{for(i in enginearr)print i "\t" enginearr[i]}'          
           统计了各种engine出现的次数.
+          
+          
+<br>
+
+<h2 id="JVM">JVM</h2>
+
+<br>
+
+   <h3 id="JVM如何加载class文件">JVM如何加载class文件</h3>   
+
+   ![JVM结构模型.png](C:\Users\guozh\Desktop\java面试\JVM结构模型.png.jpg)
+
+   - JVM 主要由一下四部分组成
+     - Class Loader
+       - 依据特定格式 , 加载class文件到内存
+     - Runtime Data Area (JVM内存模型)
+       - 包括Stack , Heap , Method Area , PC Register , Native Method Stack
+     - Execution Engine
+       - 对命令进行解析
+     - Native Interface
+       - 融合不同的开发语言的原生库为java语言所用
+
+   <h3 id="什么是反射">什么是反射</h3>   
+
+   ​	是在运行状态中, 对于任意一个类 , 或者一个对象 , 都能够直到这个类的所有属性和方法 , 这种动态获取信息以及动态调用对象的方法称为java语言的反射机制. 即 把java类中的各种成分一个个映射成java对象 . 
+
+   - 写一个反射的例子(见代码)
+     - 通过反射机制可以获取/调用类的私有属性以及私有的方法
+     - rc.getDeclaredMethod(...) 可以获取到该类的私有和公有方法 , sayNameAndAge.setAccessible(true);但是不能获取到继承来的方法和实现接口的方法 . 
+     - rc.getMethod(...) 不能获取到该类的私有方法 , 可以获取到该类的继承方法和实现接口的方法
+
+   <h3 id="谈谈ClassLoader">谈谈ClassLoader</h3>   
+
+   - ClassLoader主要负责将Class里的二进制数据流装载进系统 , 然后交给java虚拟机进行连接 , 初始化等操作 .
+
+   - ClassLoader的种类
+
+     - BootStrapClassLoader : 由C++编写 , 加载java的核心库java.*
+
+     - ExtClassLoader : java编写 , 加载扩展库javax.*
+
+     - AppClassLoader : java编写 , 加载程序所在目录
+
+     - 自定义ClassLoader : java编写 , 自定义加载 (见代码)
+
+       MyClassLoader --> loadClass --> findClass --> loadClassData --> defineClass
+
+   - 谈谈类加载器的双亲委派机制
+
+     ![类加载器的双亲委派机制](C:\Users\guozh\Desktop\java面试\类加载器的双亲委派机制.jpg)
+
+   - 为什么使用双亲委派机制去加载类
+
+     - 避免多分同样的字节码被重复加载 , 保证内存中只有一份.
+
+   - 何如通过openJDK查看native对应的代码 ?
+
+     openJDK , http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/ , browse/src/share(不依赖于平台部分的代码) /native / java / lang
+
+   <h3 id="类的加载方式">类的加载方式</h3>   
+
+   - 隐式加载 : new  : 通过new生成对象时 , 隐式调用类加载器 , 加载对应的class到JVM中 . 
+
+   - 显示加载 : loadClass , forName等 , 还要通过newInstance来得到类的对象 . 
+
+   - loadClass 和 forName的区别 : 
+
+     - 类的装载过程:
+
+       - 通过ClassLoader加载class文件字节码 , 生成Class对象
+       - 链接 : 校验 : 检查加载的class的正确性和安全性
+
+       ​	          准备 : 为类变量( static )分配存储空间并设置类变量初始值
+
+       - 初始化 : 执行类变量赋值和静态代码块
+
+     - Class.forName得到的class是已经初始化完成的 , 适用于加载class时就需要完成初始化的场景 , 比如mysql-connector中的Driver中有一段static的初始化代码段 , 我们需要用forName来加载它 . 
+
+     - Class.loadClass得到的class是还没有链接的(只完成了第一步) . 比如spring的ioc , 在初始化bean时 , 为了加快初始化速度 , 对于bean的加载采用延迟加载lazy-loading , 不执行类中的初始化代码 , 到用到这个类时才进行初始化操作 , 就需要用到loadClass的加载方式.
+
+   <h3 id="Java的内存模型">Java的内存模型</h3>   
+
+   ​	![JVM内存模型](C:\Users\guozh\Desktop\java面试\JVM内存模型.jpg)
+
+   - 程序计数器 , 每个线程都有一个程序计数器 , 只对Java方法计数 . 
+
+   - java虚拟机栈( Stack ) , 里面存储多个栈帧 ,每调用一个方法 , 就在栈中生成一个栈帧 , 每一个方法从调用开始至执行完成的过程，都对应着一个栈帧在虚拟机里面从入栈到出栈的过程，在活动线程中，只有位于栈顶的栈帧才是有效的，称为当前栈帧，与这个栈帧相关联的方法称为当前方法。方法调用结束后 , 栈帧就会被自动释放掉 (不需要通过GC回收), 每个栈帧中包含 : 局部变量表 , 操作栈 , 动态连接 , 返回地址 等
+
+     - 局部变量表 : 包含方法执行过程中的所有变量
+     - 操作数栈 : 入栈 , 出栈 , 复制 ,交换 等产生的变量
+
+     执行时按程序计数器的数从大到小压入栈 , 再按从小到大的顺序来执行 . 
+
+     - 递归为什么会引起StackOverFlow异常 ? 
+
+       - 什么是斐波那契函数 ?
+
+         F(0) = 0 , F(1) = 1 , 当你>= 2 时 , F(n) = F( n - 1 ) + F( n - 2 );
+
+       ```java
+        public static int fibonacci(int n) {
+               if (n == 0) return 0;
+               if (n == 1) return 1;
+               return fibonacci(n - 1) + fibonacci(n - 2);
+           }
+       ```
+
+       - 因为每次递归都会往栈里面压一个栈帧 , 递归过深 , 栈帧超出了虚拟栈的深度 . 
+
+   - 本地 方法栈
+
+     - 与虚拟机栈相似 , 主要作用于native的方法
+
+   - 元空间 (MetaSpace)
+
+     - 放类的加载信息 , 类中的属性和方法
+     - java8以后 , 元空间( MetaSpace ) 替换了永久代( PermGen ) , 用来存储class相关信息 , 包括class对象的method以及field , 元空间与永久代均是方法区的实现(方法区只是JVM的一种规范) , java7以后字符串常量池从方法区中移动到了java堆中. MetaSpace 与 PermGen最大的区别是 , 元空间使用的是本地内存 , 而永久代使用的是JVM的内存 . 内存分配更合理 , 不会动不动就出现永久代内存溢出的异常 . 
+
+   - Java堆( Heap )
+
+     - 包括常量池( 放字符串常量, 符号常量)
+     - 放 数组 , 类对象.
+
+   <h3 id="JVM三大性能调优参数">JVM三大性能调优参数</h3>  
+    
+   JVM三大性能调优参数 -Xms -Xmx -Xss的含义    
+    
+   java -Xms128m -Xmx128m -Xss256k -jar xxx.jar
+
+   - -Xss : 规定了每个线程虚拟机栈( 堆栈 )的大小 .  一般256k足够 .
+   - -Xms : 创建时的java堆的初始大小 . 
+   - -Xmx : java堆的最大值 . 通常将Xms与Xmx的值设为一样 , 因为堆扩容时会发生内存抖动 , 影响程序稳定 .
+   - **那么spring boot 环境下，tomcat的运行模式是哪种**
+     - SpringBoot默认是以 `java -Xmx256m -Xss256k -jar xx.jar` 来运行内置Tomcat启动方式默认是NIO (非阻塞IO , 基于IO多路复用技术实现，只需要一个线程或者少量线程，就可以处理大量请求 , 而Tomcat7及以前采用BIO , 阻塞IO ,一个请求就用一个线程来处理 , 不适用于高并发场景)
+
+   <h3 id="Java内存模型中堆和栈的区别">Java内存模型中堆和栈的区别</h3>  
+   - 内存分配策略 : 
+
+     - 栈式存储 : 数据区需求在编译时未知 , 运行时模块入口前确定内存大小
+     - 堆式存储 : 编译时或运行时模块入口都无法确定内存大小 , 程序运行时才动态分配 . 比如可变长度串和对象实例 . 
+
+   - 联系 : 
+
+     引用对象 / 数组时 , 栈里定义局部变量保存堆中目标的首地址 . 
+
+   - 管理方式 : 
+
+     JVM执行机制可以自动释放栈空间 (方法结束时) , 堆内存需要GC释放 .
+
+   - 分配方式 : 
+
+     栈支持静态和动态分配 , 而堆仅支持动态分配 . 
+
+   - 效率
+
+     栈(Stack数据结构)只支持入栈和出栈的操作 , 效率高 , 但不如堆更灵活 ,堆(双向链表)的优势在于动态分配 . 
+
+   <h3 id="元空间/堆/线程独占部分的联系">元空间/堆/线程独占部分的联系</h3>  
+
+   例如一下代码 : 
+
+   ```java
+   public class HelloWorld {
+       private String name;
+       public void setName(String name) {
+           this.name = name;
+       }
+       public void sayHello() {
+           System.out.println("hello " + name);
+       }
+       public static void main(String[] args) {
+           int a = 1;
+           HelloWorld hw = new HelloWorld();
+           hw.setName("test");
+           hw.sayHello();
+       }
+   }
+   ```
+
+   元空间 : 
+
+   Class : HelloWorld - Method : sayHello/setName/main - Field : name
+
+   Class : System
+
+   Java堆 : 
+
+   Object : String( "test" )
+
+   Object :  HelloWorld 
+
+   线程独占 (栈) : 
+
+   局部变量 test , 保存String 对象的引用 .
+
+   局部变量 hw , 保存HelloWorld 对象的引用 .
+
+   局部变量 a , 保存的常量 1 .
+
+   代码的行号
+
+   - 在idea中改变永久代的大小 :
+
+      run --> Edit Configration --> 选定方法 --> VM options --> 输入 -XX:MaxPermSize=6M  -XX:PermSize=6M
+
+     JDK6之后字符串常量池移到堆中了 , 不在永久代里了 . 
+
+   <h3 id="不同版本间intern方法的表现">不同版本间intern方法的表现</h3> 
+
+   JDK6 : 如果s字符串常量池中没有该字符串 , 则将字符串添加进常量池中 , 返回字符串在常量池中的引用 ; 如果字符串常量池中有该字符串 , 则直接返回字符串在常量池中的引用 . 
+
+   JDK6+ : 如果字符串常量池中没有该字符串 , 则将字符串在堆中的引用添加进常量池中 , 返回该引用 ; 如果字符串常量池中有该字符串 , 则直接返回字符串在常量池中的引用 .  如果堆中不存在 , 则在池中创建该字符串并返回其引用 . 
+
+   ```java
+   String s1 = new String("a");
+   s1.intern();
+   String s2 = "a";
+   System.out.println( s1 == s2 );
+   
+   String s3 = new String("a") + new String("a");
+   s3.intern();
+   String s4 = "aa";
+   System.out.println( s3 == s4 );
+   ```
+
+   在JDK6下 : 
+
+   ​	false
+
+   ​	false
+
+   分析:  
+
+   s1 == s2 : "a" 会直接在字符串常量池中创建出来 ,  而new String都是在Java的堆中创建出来的 . 因为字符串常量池中以及有了 , 所以s1.intern()没有效果 ,s1是字符串对象在堆中的地址 , s2是字符串在字符串常量池中的地址 .故 s1 != s2 ;
+
+   s3 == s4 : 在堆中生成"aa"对象 , s3.intern()发现常量池中没有该字符串 , 将"aa"的副本放入常量池(注意此时字符串常量池与堆式独立的)中 , s3是堆中的"aa"对象的地址 , s4是常量池中的"aa"的地址 . 故 s3 != s4 ; 
+
+   ![intern-jdk6](C:\Users\guozh\Desktop\java面试\intern-jdk6.jpg)
+
+   在JDK6+下 :
+
+   ​	false
+
+   ​	true
+
+   分析 :
+
+   s1 == s2 与上面分析同理;
+
+   s3 == s4 : 在堆中生成"aa"对象 , 字符串常量池中没有"aa" , 将堆中"aa"对象的地址放入常量池中(注意此时常量池也放入堆中了) , s3 是"aa"在堆中的地址 , s4也是堆中的引用 , 故 s3 == s4 ;
+
+   ![intern-jdk7](C:\Users\guozh\Desktop\java面试\intern-jdk7.jpg)
+
+​	   
+
+
+
+
+             
+          
+  
 
 
 
