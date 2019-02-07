@@ -834,7 +834,7 @@
 
    <h3 id="JVM如何加载class文件">JVM如何加载class文件</h3>   
 
-   ![JVM结构模型.png](C:\Users\guozh\Desktop\java面试\JVM结构模型.png.jpg)
+   ![JVM结构模型.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/JVM%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B.png.jpg)
 
    - JVM 主要由一下四部分组成
      - Class Loader
@@ -873,7 +873,7 @@
 
    - 谈谈类加载器的双亲委派机制
 
-     ![类加载器的双亲委派机制](C:\Users\guozh\Desktop\java面试\类加载器的双亲委派机制.jpg)
+     ![类加载器的双亲委派机制](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6.jpg)
 
    - 为什么使用双亲委派机制去加载类
 
@@ -906,7 +906,7 @@
 
    <h3 id="Java的内存模型">Java的内存模型</h3>   
 
-   ​	![JVM内存模型](C:\Users\guozh\Desktop\java面试\JVM内存模型.jpg)
+   ​	![JVM内存模型](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/JVM%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.jpg)
 
    - 程序计数器 , 每个线程都有一个程序计数器 , 只对Java方法计数 . 
 
@@ -923,7 +923,7 @@
 
          F(0) = 0 , F(1) = 1 , 当你>= 2 时 , F(n) = F( n - 1 ) + F( n - 2 );
 
-       ```java
+       ```java    
         public static int fibonacci(int n) {
                if (n == 0) return 0;
                if (n == 1) return 1;
@@ -1035,9 +1035,9 @@
 
    JDK6 : 如果s字符串常量池中没有该字符串 , 则将字符串添加进常量池中 , 返回字符串在常量池中的引用 ; 如果字符串常量池中有该字符串 , 则直接返回字符串在常量池中的引用 . 
 
-   JDK6+ : 如果字符串常量池中没有该字符串 , 则将字符串在堆中的引用添加进常量池中 , 返回该引用 ; 如果字符串常量池中有该字符串 , 则直接返回字符串在常量池中的引用 .  如果堆中不存在 , 则在池中创建该字符串并返回其引用 . 
+   JDK6+ : 如果字符串常量池中没有该字符串 , 则将字符串在堆中的引用添加进常量池中 , 返回该引用 ; 如果字符串常量池中有该字符串 , 则直接返回字符串在常量池中的引用 .  如果堆中不存在 , 则在池中创建该字符串并返回其引用 .     
 
-   ```java
+   ```java   
    String s1 = new String("a");
    s1.intern();
    String s2 = "a";
@@ -1061,7 +1061,7 @@
 
    s3 == s4 : 在堆中生成"aa"对象 , s3.intern()发现常量池中没有该字符串 , 将"aa"的副本放入常量池(注意此时字符串常量池与堆式独立的)中 , s3是堆中的"aa"对象的地址 , s4是常量池中的"aa"的地址 . 故 s3 != s4 ; 
 
-   ![intern-jdk6](C:\Users\guozh\Desktop\java面试\intern-jdk6.jpg)
+   ![intern-jdk6](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/intern-jdk6.jpg)
 
    在JDK6+下 :
 
@@ -1075,16 +1075,9 @@
 
    s3 == s4 : 在堆中生成"aa"对象 , 字符串常量池中没有"aa" , 将堆中"aa"对象的地址放入常量池中(注意此时常量池也放入堆中了) , s3 是"aa"在堆中的地址 , s4也是堆中的引用 , 故 s3 == s4 ;
 
-   ![intern-jdk7](C:\Users\guozh\Desktop\java面试\intern-jdk7.jpg)
-
-​	   
+   ![intern-jdk7](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/intern-jdk7.jpg)
 
 
-
-
-             
-          
-  
 
 
 
