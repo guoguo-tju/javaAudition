@@ -62,7 +62,7 @@
 * [Java对象被判定为垃圾的标准是什么](#Java对象被判定为垃圾的标准是什么)
 * [判定对象是否为垃圾的算法](#判定对象是否为垃圾的算法)
 * [垃圾回收的算法](#垃圾回收的算法)
-* [分代收集算法(Generational Collector)](#分代收集算法(Generational Collector))
+* [分代收集算法(Generational-Collector)](#分代收集算法(Generational-Collector))
 * [GC中什么是Stop-the-World](#GC中什么是Stop-the-World)
 * [什么是Safepoint](#什么是Safepoint)
 * [JVM的运行模式](#JVM的运行模式)
@@ -1151,7 +1151,7 @@
 
      - 分为对象面和空闲面 , 对象在对象面上创建 , 当对象面的空间用完 , 就将存活的对象从对象面复制到空闲面 , 再将对象面的所有对象内存清除 . 每次都对整个半区进行整体的内存回收 , 无需考虑内存碎片 , 适用于对象存活率较低的场景 , 比如年轻代 . 
 
-       ![复制算法](C:\Users\guozh\Desktop\java面试\复制算法.jpg)
+       ![复制算法](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95.jpg)
 
    - 标记- 整理算法 ( Compacting )  -- 适用于老年代
 
@@ -1169,15 +1169,15 @@
 
        年轻代 / 老年代 / 永久代
 
-     ![jdk6,7的堆内存划分](C:\Users\guozh\Desktop\java面试\jdk6,7的堆内存划分.jpg)
+     ![jdk6,7的堆内存划分](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jdk6%2C7%E7%9A%84%E5%A0%86%E5%86%85%E5%AD%98%E5%88%92%E5%88%86.jpg)
 
      - jdk8
 
        年轻代 / 年老代
 
-       ![jdk8堆内存的划分](C:\Users\guozh\Desktop\java面试\jdk8堆内存的划分.jpg)
+       ![jdk8堆内存的划分](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jdk8%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84%E5%88%92%E5%88%86.jpg)
 
-4. 分代收集算法(Generational Collector)
+4. 分代收集算法(Generational-Collector)
 
    - GC的分类
 
@@ -1189,7 +1189,7 @@
 
          - 两个Survivor区 (一个from区 , 一个to区 , 不断变化的)
 
-           ![年轻代](C:\Users\guozh\Desktop\java面试\年轻代.jpg)
+           ![年轻代](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%B9%B4%E8%BD%BB%E4%BB%A3.jpg)
 
        - 年轻代垃圾回收的过程
 
@@ -1255,7 +1255,7 @@
 
    - 垃圾收集器之间的联系
 
-     ![垃圾收集器之间的联系](C:\Users\guozh\Desktop\java面试\垃圾收集器之间的联系.jpg)
+     ![垃圾收集器之间的联系](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E8%81%94%E7%B3%BB.jpg)
 
    - 年轻代常见垃圾收集器
 
@@ -1301,7 +1301,7 @@
 
          6. 并发重置 : 重置CMS收集器的数据结构
 
-            ![CMS工作流程图](C:\Users\guozh\Desktop\java面试\CMS工作流程图.jpg)
+            ![CMS工作流程图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/CMS%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
 
        - 缺点 : 采用的标记-清除算法 , 会产生不连续的内存碎片 , 当要存储一个较大的对象时 , 会触发GC . 
 
@@ -1426,7 +1426,7 @@
 
     - 四种引用的比较
 
-    ![java中的四种引用](C:\Users\guozh\Desktop\java面试\java中的四种引用.jpg)
+    ![java中的四种引用](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/java%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8.jpg)
 
 11. 引用队列(ReferenceQueue)的作用
 
