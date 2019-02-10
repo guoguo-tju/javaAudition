@@ -1109,12 +1109,11 @@
 
 <br>
 
-
-1. Java对象被判定为垃圾的标准是什么
+   <h3 id="Java对象被判定为垃圾的标准是什么">Java对象被判定为垃圾的标准是什么</h3>  
 
    - 没有被其他对象引用
 
-2. 判定对象是否为垃圾的算法
+   <h3 id="判定对象是否为垃圾的算法">判定对象是否为垃圾的算法</h3>  
 
    - 引用计数算法
 
@@ -1137,7 +1136,7 @@
        - 本地方法栈中JNI( Native方法 )的引用对象
        - 活跃线程的引用对象
 
-3. 垃圾回收的算法
+   <h3 id="垃圾回收的算法">垃圾回收的算法</h3>  
 
    - 标记-清除算法(Mark and Sweep)   ---- 适用于老年代
 
@@ -1177,7 +1176,7 @@
 
        ![jdk8堆内存的划分](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jdk8%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84%E5%88%92%E5%88%86.jpg)
 
-4. 分代收集算法(Generational-Collector)
+   <h3 id="分代收集算法(Generational-Collector)">分代收集算法(Generational-Collector)</h3>  
 
    - GC的分类
 
@@ -1234,24 +1233,24 @@
 
          - 使用RMI来进行RPC或管理JDK应用 , 每小时执行一次Full GC;
 
-5. GC中什么是Stop-the-World
+   <h3 id="GC中什么是Stop-the-World">GC中什么是Stop-the-World</h3>  
 
    - JVM由于要执行GC而停止了应用程序的执行 , 除了GC线程外 , 其他线程都处于等待状态 . 
    - 任何一种GC算法中都会发生
    - GC的优化就是要减少Stop-the-world发生的时间来提高程序的吞吐量
 
-6. 什么是Safepoint
+   <h3 id="什么是Safepoint">什么是Safepoint</h3>  
 
    - 是分析过程中对象引用关系不会发生变化的点 , 一旦GC发生 , 让所有的线程跑到安全点再停顿下来 . 
    - 安全点的数量不能太少 , 会增加GC等待的时间 ; 不能太多 , 会增加程序运行的负荷 . 
 
-7. JVM的运行模式
+   <h3 id="JVM的运行模式">JVM的运行模式</h3>  
 
    - Server : 启动慢 , 长期运行时执行速度快 , 因为Server模式启动的是重量级的虚拟机 , 堆程序采用了更多的优化 .
    - Client :  启动快 , 长期运行时执行速度慢 , Client模式采用的轻量级虚拟机 . 
    - java -version 查看 :   比如 "Server VM"
 
-8. 常见的垃圾收集器
+   <h3 id="常见的垃圾收集器">常见的垃圾收集器</h3>  
 
    - 垃圾收集器之间的联系
 
@@ -1318,7 +1317,7 @@
 
    - jdk11正在开发的两个垃圾收集器 : EpsilonGC 和 ZGC
 
-9. Object的finalize()方法的作用是否与C++的析构函数作用相同
+   <h3 id="Object的finalize()方法的作用是否与C++的析构函数作用相同">Object的finalize()方法的作用是否与C++的析构函数作用相同</h3>  
 
    - 与C++的析构函数不同 , 析构函数调用确定(即在对象离开作用域之后会被delete掉), 而它的是不确定的 . 
 
@@ -1369,15 +1368,15 @@
      > second print: null
      > com.guoguo.javaAudition.gc.Finalization@7440e464     
      
-10. Java中的强引用,软引用,弱引用,虚引用  
+   <h3 id="Java中的强引用,软引用,弱引用,虚引用">Java中的强引用,软引用,弱引用,虚引用</h3>    
 
-    - 强引用 (Strong Reference )
+   - 强引用 (Strong Reference )
 
       - 最普遍的引用: Object obj = new Object();
       - 抛出OutOfMemoryError终止程序也不会回收具有强饮用的对象
       - 通过将对象设置为null来弱化引用 , 使其被回收
 
-    - 软引用 (Soft Reference )
+   - 软引用 (Soft Reference )
 
       - 对象处在有用但非必须的状态
 
@@ -1391,7 +1390,7 @@
         
         ```
 
-    - 弱引用 (Weak Reference )
+   - 弱引用 (Weak Reference )
 
       - 非必须对象 , 比软引用更弱一些
 
@@ -1407,7 +1406,7 @@
         
         ```
 
-    - 虚引用 (PhantomReference )
+   - 虚引用 (PhantomReference )
 
       - 不会决定对象的生命周期
 
@@ -1424,14 +1423,14 @@
         
         ```
 
-    - 四种引用的比较
+   - 四种引用的比较
 
-    ![java中的四种引用](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/java%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8.jpg)
+   ![java中的四种引用](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/java%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8.jpg)
 
-11. 引用队列(ReferenceQueue)的作用
+   <h3 id="引用队列(ReferenceQueue)的作用">引用队列(ReferenceQueue)的作用</h3>  
 
-    - 无实际存储结构 , 存储逻辑依赖于内部节点之间的关系表达
-    - 存储关联的且被GC的软引用 , 弱引用以及虚引用
+   - 无实际存储结构 , 存储逻辑依赖于内部节点之间的关系表达
+   - 存储关联的且被GC的软引用 , 弱引用以及虚引用
 
 
 
