@@ -57,6 +57,21 @@
 * [元空间/堆/线程独占部分的联系](#元空间/堆/线程独占部分的联系)
 * [不同JDK版本间intern方法的表现](#不同JDK版本间intern方法的表现)
 
+### GC
+
+* [Java对象被判定为垃圾的标准是什么](#Java对象被判定为垃圾的标准是什么)
+* [判定对象是否为垃圾的算法](#判定对象是否为垃圾的算法)
+* [垃圾回收的算法](#垃圾回收的算法)
+* [分代收集算法(Generational Collector)](#分代收集算法(Generational Collector))
+* [GC中什么是Stop-the-World](#GC中什么是Stop-the-World)
+* [什么是Safepoint](#什么是Safepoint)
+* [JVM的运行模式](#JVM的运行模式)
+* [常见的垃圾收集器](#常见的垃圾收集器)
+* [Object的finalize()方法的作用是否与C++的析构函数作用相同](#Object的finalize()方法的作用是否与C++的析构函数作用相同)
+* [Java中的强引用,软引用,弱引用,虚引用](#Java中的强引用,软引用,弱引用,虚引用)
+* [引用队列(ReferenceQueue)的作用](#引用队列(ReferenceQueue)的作用)
+
+
 ### 消息队列
 * [为什么要引入消息中间件](#为什么要引入消息中间件)
 * [引入消息中间件之后会有哪些缺点](#引入消息中间件之后会有哪些缺点)
@@ -1087,6 +1102,336 @@
 
    ![intern-jdk7](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/intern-jdk7.jpg)
 
+
+<br>
+
+<h2 id="GC">GC</h2>
+
+<br>
+
+
+1. Java对象被判定为垃圾的标准是什么
+
+   - 没有被其他对象引用
+
+2. 判定对象是否为垃圾的算法
+
+   - 引用计数算法
+
+     通过判断对象的引用数量来决定对象是否可以被回收 
+
+     - 每个对象实例都有一个引用计数器 , 被引用则 + 1 ,完成引用则 - 1
+     - 任何引用计数为0的对象实例可以被当做垃圾收集
+     - 优点 : 执行效率高 , 程序执行受影响小
+     - 缺点 : 无法检测出循环引用的情况 , 导致内存泄漏
+
+   - 可达性分析算法
+
+     通过可达性算法判断对象的引用链是否可达来决定对象是否可以被回收
+
+     - 从一系列GC root节点作为起始点用可达性算法向下搜索 , 所走过的路径称为引用链(Reference chain) . 如果一个对象不在引用链上 , 会被表明不可达 , 被回收 . 
+     - 可以作为GC Root的对象
+       - 虚拟机栈中的引用的对象
+       - 方法区中的常量引用的对象
+       - 方法区中的类静态属性引用的对象
+       - 本地方法栈中JNI( Native方法 )的引用对象
+       - 活跃线程的引用对象
+
+3. 垃圾回收的算法
+
+   - 标记-清除算法(Mark and Sweep)   ---- 适用于老年代
+
+     - 标记 : 用可达性算法从root节点开始扫描 , 对可达对象进行标记
+
+       清除 : 对堆内存从头到尾进行线性遍历 , 回收不可达的对象内存
+
+     - 缺点 :  仅对不存活的对象进行处理 , 因此在清除之后会产生大量不连续的内存碎片 , 导致以后无法分配较大的连续内存 , 而提前触发另一次GC.
+
+   - 复制算法 ( Copying ) -- 适用于年轻代
+
+     - 分为对象面和空闲面 , 对象在对象面上创建 , 当对象面的空间用完 , 就将存活的对象从对象面复制到空闲面 , 再将对象面的所有对象内存清除 . 每次都对整个半区进行整体的内存回收 , 无需考虑内存碎片 , 适用于对象存活率较低的场景 , 比如年轻代 . 
+
+       ![复制算法](C:\Users\guozh\Desktop\java面试\复制算法.jpg)
+
+   - 标记- 整理算法 ( Compacting )  -- 适用于老年代
+
+     - 标记 : 用可达性算法从root节点开始扫描 , 对可达对象进行标记
+
+       清除 : 移动所有存活的对象 , 且按照内存地址次序依次排列 , 然后将末端内存地址以后的内存全部回收 . 
+
+     - 解决了内存碎片的问题 , 适用于存活率高的场景 . 
+
+   - 分代收集算法 ( Generational Collector )
+
+     - 按照对象生命周期的不同划分区域以采用不同的垃圾回收算法
+
+     - jdk6/jdk7 
+
+       年轻代 / 老年代 / 永久代
+
+     ![jdk6,7的堆内存划分](C:\Users\guozh\Desktop\java面试\jdk6,7的堆内存划分.jpg)
+
+     - jdk8
+
+       年轻代 / 年老代
+
+       ![jdk8堆内存的划分](C:\Users\guozh\Desktop\java面试\jdk8堆内存的划分.jpg)
+
+4. 分代收集算法(Generational Collector)
+
+   - GC的分类
+
+     - Minor GC -- 发生在年轻代中的垃圾收集动作 , 采用复制算法
+
+       - 年轻代 : 尽可能快速地收集那些生命周期短的对象
+
+         - Eden区 : 新的对象刚创建时分配在此 . 
+
+         - 两个Survivor区 (一个from区 , 一个to区 , 不断变化的)
+
+           ![年轻代](C:\Users\guozh\Desktop\java面试\年轻代.jpg)
+
+       - 年轻代垃圾回收的过程
+
+         - Eden区空间不足时 , 触发Minor GC . 
+         - 将Eden和一块Survivor上的存活对象一次性复制到另一个Survivor上 , 清理掉Eden和一块Survivor的全部对象 , 当Survivor不够用了 , 需要依靠老年代做担保 . 
+
+       - 年轻代对象如何晋升到老年代
+
+         - 存活对象每经过一个GC , 它的年龄就 +１，或年龄超过( -XX:MaxTenuringThreshold 默认为15) , 会被移入老年代 .
+         - Survivor区中存放不下的对象 , 会移入老年代. 
+         - 新生成的大对象 ( -XX: +PretenuerSizeThreshold 设置对象大小)
+
+       - 常用的调优参数
+
+         - -XX:SurvivorRatio : Eden和Survivor的比值 , 默认 8 : 1
+         - -XX:NewRatio : 老年代和年轻代内存大小的比例 , 默认 2 : 1
+         - -XX:MaxTenuringThreshold : 对象从年轻代晋升到老年代经过GC次数的最大阈值 . 
+
+     - Full GC
+
+       - 老年代 : 存放生命周期较长的对象 , 用标记-清理算法 / 标记-整理算法 
+
+       - 通常Full GC也会对年轻代进行垃圾回收 . 
+
+         Major GC 要问清楚是指full GC 还是只针对年老代的GC
+
+         Full GC比Minor GC慢 , 执行效率低
+
+       - 触发Full GC的条件
+
+         - 老年代空间不足
+
+         - 永久代空间不足 (JDK7以前)
+
+           所以jdk8用元空间代理永久代 , 减少了Full GC的频率 , 降低了GC负担.
+
+         - CMS GC时出现promotion failed , concurrent mode failure
+
+         - Minor GC晋升到老年代的平津大小大于老年代的剩余空间
+
+         - 调用System.gc(); 这里只是程序员提醒JVM进行GC , 决定权在JVM手里 .
+
+         - 使用RMI来进行RPC或管理JDK应用 , 每小时执行一次Full GC;
+
+5. GC中什么是Stop-the-World
+
+   - JVM由于要执行GC而停止了应用程序的执行 , 除了GC线程外 , 其他线程都处于等待状态 . 
+   - 任何一种GC算法中都会发生
+   - GC的优化就是要减少Stop-the-world发生的时间来提高程序的吞吐量
+
+6. 什么是Safepoint
+
+   - 是分析过程中对象引用关系不会发生变化的点 , 一旦GC发生 , 让所有的线程跑到安全点再停顿下来 . 
+   - 安全点的数量不能太少 , 会增加GC等待的时间 ; 不能太多 , 会增加程序运行的负荷 . 
+
+7. JVM的运行模式
+
+   - Server : 启动慢 , 长期运行时执行速度快 , 因为Server模式启动的是重量级的虚拟机 , 堆程序采用了更多的优化 .
+   - Client :  启动快 , 长期运行时执行速度慢 , Client模式采用的轻量级虚拟机 . 
+   - java -version 查看 :   比如 "Server VM"
+
+8. 常见的垃圾收集器
+
+   - 垃圾收集器之间的联系
+
+     ![垃圾收集器之间的联系](C:\Users\guozh\Desktop\java面试\垃圾收集器之间的联系.jpg)
+
+   - 年轻代常见垃圾收集器
+
+     - Serial收集器 ( -XX: +UserSerialGC , 复制算法 )
+       - 单线程收集 , 进行垃圾收集时 , 必须暂停所有的工作线程 (停顿在几十ms到一百ms之间)
+       - 简单高效 , Client 模式下默认的年轻代收集器
+     - ParNew收集器 ( -XX: +UseParNewGC , 复制算法 )
+       - 多线程收集 , 其余的行为特点和Serial收集器一样
+       - 单核执行效率不如Serial , 在多核执行才有优势 . (可以与CMS配合)
+     - Parallel Scavenge收集器 ( -XX: +UseParallelGC , 复制算法 )
+       - 吞吐量 = 运行用户代码时间 / ( 运行用户代码时间 + 垃圾收集时间 )
+       - 比起关注用户线程停顿时间 , 更关注系统的吞吐量
+       - 在多核执行才有优势 , Server模式下默认的年轻代收集器
+       - 优化时配合自适应调节策略 : -XX: +UseAdaptiveSizePolicy 把内存管理的调优任务交给JVM区完成 . 
+
+   - 老年代常见的垃圾收集器
+
+     - Serial Old收集器 ( -XX:+UseSerialOldGC , 标记-整理算法 )
+
+       - 单线程收集 , 进行垃圾收集时 , 必须暂停所有工作线程
+       - 简单高效 , Client模式下默认的老年代收集器
+
+     - Parallel Old收集器 ( -XX: +UseParallelOldGC , 标记-整理算法 )
+
+       - 多线程 , 吞吐量优先
+       - Parallel Scavenge + Parallel Old 搭配使用 , 适用注重吞吐量和CPU资源敏感的场合
+
+     - CMS收集器 ( -XX: +UseConcMarkSweepGC , 标记-清除算法 )
+
+       - 垃圾回收线程几乎能与用户线程做到同时工作 (一边打扫一边丢垃圾) , 即Stop-the-world尽可能被缩短 , 适用于对停顿敏感 , 并且可以提供更大的内存和CPU(更好的硬件) , 适合有较多存活时间长的对象 .  
+
+       - CMS收集垃圾的过程 :
+
+         1. 初始标记: 会短暂暂停JVM , 只扫描并标记到能够和根对象直接关联的对象 . 
+
+         2. 并发标记 : 并发追溯标记 , 程序不会停顿 .
+
+         3. 并发预清理 : 查找执行并发标记阶段从年轻代晋升到老年代的对象 . 
+
+         4. 重新标记 : 暂停JVM , 扫描CMS堆中的剩余对象
+
+         5. 并发清理 : 清理垃圾对象 , 程序不停顿
+
+         6. 并发重置 : 重置CMS收集器的数据结构
+
+            ![CMS工作流程图](C:\Users\guozh\Desktop\java面试\CMS工作流程图.jpg)
+
+       - 缺点 : 采用的标记-清除算法 , 会产生不连续的内存碎片 , 当要存储一个较大的对象时 , 会触发GC . 
+
+   - 既能用于年轻代 , 可能用于老年代的收集器
+
+     - G1收集器 (-XX: +UseG1GC , 复制 + 标记-整理算法 )
+       - 将整个Java堆内存划分成多个大小相等的Region
+       - 年轻代和老年代不再物理隔离 , 不需要在JVM启动时就决定那些Region属于年轻代 , 哪些属于年老代
+       - Garbage First收集器的特点
+         - 并行和并发 
+         - 独立管理整个堆 , 分代收集 
+         - 空间整合 (基于标记-整理算法 , 解决内存碎片问题)
+         - 可预测的停顿 ( 可以设置停顿时间不超过m毫秒)
+
+   - jdk11正在开发的两个垃圾收集器 : EpsilonGC 和 ZGC
+
+9. Object的finalize()方法的作用是否与C++的析构函数作用相同
+
+   - 与C++的析构函数不同 , 析构函数调用确定(即在对象离开作用域之后会被delete掉), 而它的是不确定的 . 
+
+   - 将未被引用的对象放置于F- Queue队列 , 并在稍后由一个低优先级的finalize线程去处理 . 
+
+   -  由于是低优先级 , 方法的执行随时可能被终止 . 
+
+   - finalize()的作用是给对象最后一次重生的机会
+
+   - finalize()运行不确定性较大 , 运行代价高 , 不建议使用 
+
+   - 举例 : 
+
+     ```java   
+     public class Finalization {
+     
+         public static Finalization finalization;
+     
+         @Override
+         protected void finalize() {
+             System.out.println("into finalize");
+             finalization = this;    1
+         }
+     
+         public static void main(String[] args) {
+             Finalization f = new Finalization();
+             System.out.println("first print: " + f);
+             f = null;
+             // gc()会调用我们重写的finalize()方法
+             System.gc();
+             System.out.println("second print: " + f);
+             System.out.println(f.finalization);
+         }
+     }
+     ```
+
+     运行结果为:
+
+     > first print: com.guoguo.javaAudition.gc.Finalization@7440e464
+     > second print: null
+     > into finalize
+     > null
+
+     最后一个结果为null , 表明finalize()方法中的finalization = this 没有被执行到该方法就被终止了 . 可以在Sysyem.gc()之后加一个等待 , 让finalize()方法执行完 . 结果为 : 
+
+     > first print: com.guoguo.javaAudition.gc.Finalization@7440e464
+     > into finalize
+     > second print: null
+     > com.guoguo.javaAudition.gc.Finalization@7440e464     
+     
+10. Java中的强引用,软引用,弱引用,虚引用  
+
+    - 强引用 (Strong Reference )
+
+      - 最普遍的引用: Object obj = new Object();
+      - 抛出OutOfMemoryError终止程序也不会回收具有强饮用的对象
+      - 通过将对象设置为null来弱化引用 , 使其被回收
+
+    - 软引用 (Soft Reference )
+
+      - 对象处在有用但非必须的状态
+
+      - 只有当内存空间不足时  , GC会回收该引用的对象的内存
+
+      - 可以用来实现高速缓存
+
+        ```java   
+        String str = new String("abc");          // 先强引用声明
+        SoftReference<String> softRef = new SoftReference<String>(str);              // 软引用
+        
+        ```
+
+    - 弱引用 (Weak Reference )
+
+      - 非必须对象 , 比软引用更弱一些
+
+      - GC时会被回收
+
+      - 被回收的概率也不大 , 因为GC线程优先级比较低
+
+      - 适用于引用偶尔被使用且不影响垃圾收集的对象
+
+        ```java   
+        String str = new String("abc");
+        WeakReference<String> weakRef = new WeakReference<String>(str);           // 虚引用
+        
+        ```
+
+    - 虚引用 (PhantomReference )
+
+      - 不会决定对象的生命周期
+
+      - 任何时候都可能被垃圾收集器回收
+
+      - 跟踪对象被垃圾收集器回收的活动 , 起哨兵作用
+
+      - 必须和引用队列ReferenceQueue联合使用
+
+        ```java   
+        String str = new String("abc");
+        ReferenceQueue queue = new ReferenceQueue();
+        PhantomReference ref = new PhantomReference(str, queue);
+        
+        ```
+
+    - 四种引用的比较
+
+    ![java中的四种引用](C:\Users\guozh\Desktop\java面试\java中的四种引用.jpg)
+
+11. 引用队列(ReferenceQueue)的作用
+
+    - 无实际存储结构 , 存储逻辑依赖于内部节点之间的关系表达
+    - 存储关联的且被GC的软引用 , 弱引用以及虚引用
 
 
 
