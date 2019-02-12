@@ -850,9 +850,29 @@
           grep 'partial\[true\]' bsc-data.info.log | grep -o 'engine\[[0-9a-z]*\]' | awk '{enginearr[$1]++}END{for(i in enginearr)print i "\t" enginearr[i]}'          
           统计了各种engine出现的次数.
           
-          
-<br>
-
+   <h3 id="批量替换文本内容">批量替换文本内容</h3>             
+     
+   - 语法 :  sed  [option]  'sed command'  filename
+     
+       - sed , 全名 : stream editor , 流编辑器 . 适合用于对文本的行内容进行处理
+     
+       - sed -i 's/^Str/String/' replace.java        将java文件中每行开头的Str替换为String
+     
+         's/^Str/String/'中 : "s"表示进行字符串操作 , 前两个"/"之间表示要替换的内容 , 后两个"/"之间表示要替换成的内容. "^Str" 表示以Str开头 . "-i" 表示改变文件的内容.
+     
+       - sed -i 's/\\.$/\;/'  replace.java        将java文件中每行末尾的.替换为;
+     
+         's/\\.$/\;/'中 :  "\\." 表示对"."进行转义 , "$"表示在每行的末尾 . 同样";"也需要转义 . 
+     
+       - sed -i 's/Jack/Tom/g'  replace.java          将java文件中的Jack替换为Tom(全文)
+     
+         第三个"/" 后面加g表示全文的替换 , 如果不加g表示将每行的第一个Jack替换掉.
+     
+       - sed -i '/Integer/d'  replace.java         将带有Integer的行删掉
+     
+         "d"表示删除
+     
+     
 <h2 id="JVM">JVM</h2>
 
 <br>
@@ -1227,7 +1247,7 @@
 
          - CMS GC时出现promotion failed , concurrent mode failure
 
-         - Minor GC晋升到老年代的平津大小大于老年代的剩余空间
+         - Minor GC晋升到老年代的平均大小大于老年代的剩余空间
 
          - 调用System.gc(); 这里只是程序员提醒JVM进行GC , 决定权在JVM手里 .
 
@@ -1621,10 +1641,6 @@
   1. **生产端如何保证投递出去的消息不丢失**消息在半路丢失，或者在MQ内存中宕机导致丢失，此时你如何基于MQ的功能保证消息不要丢失？
   2. **MQ自身如何保证消息不丢失**起码需要让MQ对消息是有持久化到磁盘这个机制。
   3. **消费端如何保证消费到的消息不丢失**如果你处理到一半消费端宕机，导致消息丢失，此时怎么办？
-  
-  
-  
-  
 
 
   	
