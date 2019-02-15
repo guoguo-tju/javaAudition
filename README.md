@@ -1659,7 +1659,7 @@
 
 2. Java的异常体系
 
-   ![java的异常体系](C:\Users\Administrator\Desktop\imooc\java的异常体系.png)
+   ![java的异常体系](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/java%E7%9A%84%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png)
 
    - RunTimeException : 不可预知的 , 程序应当自行避免 . ( 比如空指针 , 数组下标越界 )
    - 非RunTimeException(直接继承Exception , 而不是RunTimeException ) : 可预知的 , 从编译器校验的异常 , 即编译时异常. ( 比如IOException , SQLException , 编译器直接报错的 , 需要try-catch) 
