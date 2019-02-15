@@ -1641,6 +1641,52 @@
   1. **生产端如何保证投递出去的消息不丢失**消息在半路丢失，或者在MQ内存中宕机导致丢失，此时你如何基于MQ的功能保证消息不要丢失？
   2. **MQ自身如何保证消息不丢失**起码需要让MQ对消息是有持久化到磁盘这个机制。
   3. **消费端如何保证消费到的消息不丢失**如果你处理到一半消费端宕机，导致消息丢失，此时怎么办？
+  
+  
+  
+<br>
+
+<h2 id="Java常用类库">Java常用类库</h2>
+
+<br>
+
+
+1. Error和Exception的区别
+
+   - Error : 程序无法处理的系统错误(与JVM相关 : 系统崩溃, 堆内存空间不足  , 方法调用栈溢出等) , 编译器不做检查 . 
+   - Exception : 程序可以处理的异常 , 捕获后可能恢复 . 
+   - 总结 : 前者是程序无法处理的错误 , 后者是可以处理的异常 . 
+
+2. Java的异常体系
+
+   ![java的异常体系](C:\Users\Administrator\Desktop\imooc\java的异常体系.png)
+
+   - RunTimeException : 不可预知的 , 程序应当自行避免 . ( 比如空指针 , 数组下标越界 )
+   - 非RunTimeException(直接继承Exception , 而不是RunTimeException ) : 可预知的 , 从编译器校验的异常 , 即编译时异常. ( 比如IOException , SQLException , 编译器直接报错的 , 需要try-catch) 
+   - 从责任角度来看
+     - Error属于JVM需要负担的责任
+     - RunTimeException是程序应该负担的责任
+     - CheckedException可检查异常是Java编译器应该负担的责任 
+
+3. 常见的Error以及Exception
+
+   - RuntimeException
+     - NullPointerException -- 空指针异常
+     - ClassCastException -- 类型强制转换异常
+     - IllegalArgumentException -- 传递非法参数异常
+     - IndexOutOfBoundsException -- 下标越界异常
+     - NumberFormatException  -- 数字格式异常
+   - 非RunTimeException
+     - ClassNotFoundException  -- 找不到指定class的异常
+     - IOException -- IO操作异常
+   - Error
+     - NoClassDefFoundError  --  找不到class定义的异常
+       - 成因 :
+       - 类依赖的class或者jar不存在
+       - 类文件存在 , 但是存在不同的域中
+       - 大小写问题 , javac编译的时候是无视大小写的 , 很有可能编译出来的class文件就与想要的不同
+     - StackOverFlowError -- 深递归导致栈被耗尽而抛出的异常
+     - OutOfMemoryError -- 内存溢出异常
 
 
   	
