@@ -84,6 +84,12 @@
 * [消息中间件全链路100%数据不丢失(三个方面)](#消息中间件全链路100%数据不丢失(三个方面))
 
 
+### Java常用类库
+* [Error和Exception的区别](#Error和Exception的区别)
+* [Java的异常体系](#Java的异常体系)
+* [常见的Error以及Exception](#常见的Error以及Exception)
+
+
 
 <br>
 
@@ -1650,14 +1656,13 @@
 
 <br>
 
-
-1. Error和Exception的区别
+  <h3 id="Error和Exception的区别">Error和Exception的区别</h3> 
 
    - Error : 程序无法处理的系统错误(与JVM相关 : 系统崩溃, 堆内存空间不足  , 方法调用栈溢出等) , 编译器不做检查 . 
    - Exception : 程序可以处理的异常 , 捕获后可能恢复 . 
    - 总结 : 前者是程序无法处理的错误 , 后者是可以处理的异常 . 
-
-2. Java的异常体系
+   
+  <h3 id="Java的异常体系">Java的异常体系</h3> 
 
    ![java的异常体系](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/java%E7%9A%84%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png)
 
@@ -1668,7 +1673,7 @@
      - RunTimeException是程序应该负担的责任
      - CheckedException可检查异常是Java编译器应该负担的责任 
 
-3. 常见的Error以及Exception
+  <h3 id="常见的Error以及Exception">常见的Error以及Exception</h3> 
 
    - RuntimeException
      - NullPointerException -- 空指针异常
