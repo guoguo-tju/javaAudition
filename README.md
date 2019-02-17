@@ -88,6 +88,17 @@
 * [Error和Exception的区别](#Error和Exception的区别)
 * [Java的异常体系](#Java的异常体系)
 * [常见的Error以及Exception](#常见的Error以及Exception)
+* [数据结构和算法考点](#数据结构和算法考点)
+* [Java集合](#Java集合)
+* [HashMap/HashTable/ConcurentHashMap的区别](#HashMap/HashTable/ConcurentHashMap的区别)
+* [Java8前后HashMap的区别](#Java8前后HashMap的区别)
+* [HashMap的put方法](#HashMap的put方法)
+* [HashMap如何减少碰撞以提高效率](#HashMap如何减少碰撞以提高效率)
+* [HashMap扩容的问题](#HashMap扩容的问题)
+* [什么是HashTable](#什么是HashTable)
+* [什么是ConcurrentHashMap](#什么是ConcurrentHashMap)
+* [CountDownLatch和CyclicBarrier的区别](#CountDownLatch和CyclicBarrier的区别)
+* [BIO/NIO/AIO的区别](#BIO/NIO/AIO的区别)
 
 
 
@@ -1693,5 +1704,99 @@
      - StackOverFlowError -- 深递归导致栈被耗尽而抛出的异常
      - OutOfMemoryError -- 内存溢出异常
 
+  <h3 id="数据结构和算法考点">数据结构和算法考点</h3> 
 
+   ![数据结构考点](C:\Users\guozh\Desktop\java面试\数据结构考点.jpg)
+
+   ![算法考点](C:\Users\guozh\Desktop\java面试\算法考点.jpg)
+
+
+  <h3 id="Java集合">Java集合</h3> 
+  
+   - list和set考点![list和set常考考点](C:\Users\guozh\Desktop\java面试\list和set常考考点.jpg)
+     - set本质是由Map实现的 , 把元素放入Map中的key , 而value给一个new Onject() . 
+     - TreeSet中自然排序 ( 传入的对象实现了Comparable的接口) 的优先级低于客户化排序 (在new TreeSet时在构造方法中传入的Comparator类)
+
+  <h3 id="HashMap/HashTable/ConcurentHashMap的区别">HashMap/HashTable/ConcurentHashMap的区别</h3> 
+
+   - HashMap线程不安全 , 数组 + 链表 + 红黑树
+   - HashTable线程安全 , 锁住整个对象 , 数组 + 链表
+   - ConcurrentHashMap线程安全 , CAS + 同步锁(将锁细粒度到数组的每个元素上) , 数组 + 链表 + 红黑树
+
+  <h3 id="Java8前后HashMap的区别">Java8前后HashMap的区别</h3> 
+
+   - HashMap(Java8以前) :数组(数组的默认长度是16) + 链表
+     - 极端情况下元素key全都落在同一个链表下面 , 性能恶化: 从O(1)变为O(n)
+   - HashMap(Java8以后) : 数组 + 链表 + 红黑时
+     - 通过一个常量TREEIFY_THRESHOLD 默认为8, 当链表长度大于这个值后 , 转化为红黑树 , 这样性能恶化时的复杂度从 O(n)提高到 O(logn) . 当红黑树因为被删除而元素个数小于UNTREEIFY_THRESHOLD默认为6时 , 红黑树转化为链表以保障效率
+
+  <h3 id="HashMap的put方法">HashMap的put方法</h3> 
+
+   1. 如果HashMap未被初始化过 , 则初始化 . 
+   2. 对Key求Hash值 , 然后再计算出数组下标. 
+   3. 如果没有碰撞 , 直接放入数组下标对应的元素中 . 
+   4. 如果碰撞了 , 以链表的方式链接到后面 . 
+   5. 如果链表长度超过阈值 默认8, 就把链表转成红黑树
+   6. 如果链表长度低于6, 就把红黑树转回链表
+   7. 如果key已经存在就替换旧值
+   8. 如果数组满了(容量16*加载因子0.75) , 就需要resize (扩容2倍后重排)
+
+  <h3 id="HashMap如何减少碰撞以提高效率">HashMap如何减少碰撞以提高效率</h3> 
+
+   - 利用一些扰动函数 , 促使元素位置分布均匀 , 减少碰撞几率 . 
+   - key值使用final对象 , 并采用合适的equals()和hashCode()方法 . 使用String / Integer这样的包装类作为key是很好的选择 , 因为String是final的 , 并重写了equals和hashCode方法了 , final防止防止放入时和查找时的hashCode不一样.
+
+  <h3 id="HashMap扩容的问题">HashMap扩容的问题</h3>     
+
+   - 多线程环境下就, 调整大小会存在条件的竞争 , 容易造成死锁 . 
+   - 扩容后重新分配元素的rehashing是一个比较耗时的过程 . 
+
+  <h3 id="什么是HashTable">什么是HashTable</h3>     
+
+   - 是早期Java类库提供的哈希表的实现
+   - 线程安全的 : 涉及到的修改方法 , 使用synchronzie锁住整个对象 . 性能较差 . 
+
+  <h3 id="什么是ConcurrentHashMap">什么是ConcurrentHashMap</h3>     
+
+   - java8之前的实现 :  给数据分段(默认分为16个Segment) , 每个分段Segment都有一把分段锁 . 访问其中一个Segment不影响其他Segment的访问 , 理论上比HashTable的效率提高16倍 .  
+
+   - java8之后的实现 : CAS + synchronize(锁更加细粒化 , 只锁定链表/红黑树的首节点 , 这样只要hash不冲突 , 就不会产生并发冲突 , 效率得到提高) 
+
+      底层数据结构也类似于java8以后的HashMap(数组 + 链表 +红黑树)
+
+   - ConcurrentHashMap的put方法逻辑:
+
+      1. 判断Node[]数组是否初始化 , 没有则进行初始化操作 . 
+      2. 通过hash定位数组的索引坐标 , 是否有Node节点 , 如果没有则使用CAS进行添加( 链表的头节点 ) , 添加失败则进入下次循环 . 添加成功 :
+      3. 检查到内部正在扩容 , 就帮助它一块扩容 . 
+      4. 如果链表/红黑树的头节点 != null , 则使用synchronized锁住该头节点 . 继续对链表/红黑树执行添加操作 . 
+      5. 判断链表长度 , 如果大于8 , 将链表结构转换为红黑树 . 
+
+  <h3 id="CountDownLatch和CyclicBarrier的区别">CountDownLatch和CyclicBarrier的区别</h3>     
+
+   - CyclicBarrier是所有线程达到栅栏处 , 才触发执行另外一个预先设置的线程 . 这里子线程在await()之后计数器-1 , 就阻塞住了. 
+   - CountDownLatch是让主线程等待一组事件发生后继续执行 . 这里子线程在countDown()之后计数器-1 , 没有被阻塞住 . 
+   - Exchanger : 两个线程到达同步点后 , 相互交换数据 . 
+
+  <h3 id="BIO/NIO/AIO的区别">BIO/NIO/AIO的区别</h3>     
+
+   - BIO(Block-IO)是基于流模型实现的 , 意味着其交互方式是同步阻塞的 . 
+
+   - NIO(NonBlock-IO) 是多路复用的 , 同步非阻塞的IO操作 . 
+
+      - 核心 :
+
+        - Channels 
+
+          IO都从channel中开始 , 像流 , 数据可以从Channel进入Buffer , 也可以从Buffer流向Channel . 
+
+        - Buffers
+
+        - Selectors
+
+          允许单线程处理多个Channel . 如果同时打开多个Channel , 每个Channel流量又很低 , 使用Selector就会很方便 (Channel需要在selector上注册).      
+
+        ![NIO中Selector,Channel,Buffer](C:\Users\guozh\Desktop\java面试\NIO中Selector,Channel,Buffer.jpg)
+
+   - 
   	
