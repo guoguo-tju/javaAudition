@@ -1706,14 +1706,14 @@
 
   <h3 id="数据结构和算法考点">数据结构和算法考点</h3> 
 
-   ![数据结构考点](C:\Users\guozh\Desktop\java面试\数据结构考点.jpg)
+   ![数据结构考点](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%80%83%E7%82%B9.jpg)
 
-   ![算法考点](C:\Users\guozh\Desktop\java面试\算法考点.jpg)
+   ![算法考点](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%AE%97%E6%B3%95%E8%80%83%E7%82%B9.jpg)
 
 
   <h3 id="Java集合">Java集合</h3> 
   
-   - list和set考点![list和set常考考点](C:\Users\guozh\Desktop\java面试\list和set常考考点.jpg)
+   - list和set考点![list和set常考考点](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/list%E5%92%8Cset%E5%B8%B8%E8%80%83%E8%80%83%E7%82%B9.jpg)
      - set本质是由Map实现的 , 把元素放入Map中的key , 而value给一个new Onject() . 
      - TreeSet中自然排序 ( 传入的对象实现了Comparable的接口) 的优先级低于客户化排序 (在new TreeSet时在构造方法中传入的Comparator类)
 
@@ -1796,7 +1796,7 @@
 
           允许单线程处理多个Channel . 如果同时打开多个Channel , 每个Channel流量又很低 , 使用Selector就会很方便 (Channel需要在selector上注册).      
 
-        ![NIO中Selector,Channel,Buffer](C:\Users\guozh\Desktop\java面试\NIO中Selector,Channel,Buffer.jpg)
+        ![NIO中Selector,Channel,Buffer](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/NIO%E4%B8%ADSelector%2CChannel%2CBuffer.jpg)
 
    - 
   	
