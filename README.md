@@ -1794,9 +1794,16 @@
 
         - Selectors
 
-          允许单线程处理多个Channel . 如果同时打开多个Channel , 每个Channel流量又很低 , 使用Selector就会很方便 (Channel需要在selector上注册).      
+          允许单线程处理多个Channel . 单线程的轮循机制 , 通过高效定位就绪的channel来决定做什么 . 
+          如果同时打开多个Channel , 每个Channel流量又很低 , 使用Selector就会很方便 (Channel需要在selector上注册).      
 
         ![NIO中Selector,Channel,Buffer](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/NIO%E4%B8%ADSelector%2CChannel%2CBuffer.jpg)
 
-   - 
+   - AIO (Asynchronous IO) :  异步非阻塞IO 
+
+     基于事件和回调机制 , 应用操作直接返回而不会阻塞在那里 ,  当后台处理完成 , 响应线程会调用回调函数 . 
+     
+   ![BIO,NIO,AIO的对比](C:\Users\guozh\Desktop\imooc\BIO,NIO,AIO的对比.jpg)
+
+
   	
