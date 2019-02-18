@@ -1803,7 +1803,7 @@
 
      基于事件和回调机制 , 应用操作直接返回而不会阻塞在那里 ,  当后台处理完成 , 响应线程会调用回调函数 . 
      
-   ![BIO,NIO,AIO的对比](C:\Users\guozh\Desktop\imooc\BIO,NIO,AIO的对比.jpg)
+   ![BIO,NIO,AIO的对比](https://github.com/guoguo-tju/javaAudition/blob/master/src/main/resources/picture/BIO,NIO,AIO%E7%9A%84%E5%AF%B9%E6%AF%94.jpg?raw=true)
 
 
   	
