@@ -1807,3 +1807,25 @@
 
 
   	
+  	
+ 1. Java中进程和线程的关系
+    - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
+    - 每个线程对应一个JVM实例 , 多个线程共享JVM里的堆 
+    - Java采用单线程编程模型 , 程序会自动创建主线程
+ 
+ 2. 线程的start和run方法的区别
+ 
+    ```java     
+    public static void main(String[] args){
+        Thread t = new Thread(){
+            public void run(){
+                attack();
+            }
+        };
+        t.run();
+        t.start();
+    }
+    ```
+ 
+    - start()方法会创建一个新的子线程并启动
+    - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
