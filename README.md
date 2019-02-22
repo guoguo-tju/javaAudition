@@ -339,6 +339,7 @@
    3. 修改sql或者尽量让sql走索引  
         EXPLAIN SELECT COUNT(id) FROM `repayment` ORDER BY create_time DESC; 查询时没有走主键索引,而是根据查询优化来选择走哪个索引.   
         EXPLAIN SELECT COUNT(id) FROM `repayment` ORDER BY create_time DESC force index(primary)强制用主键索引. 
+   4. where查询条件里不要包含null , 因为不会走索引 . 所以在建表时尽量不要让字段有null值 , 用 NOT NULL DEFAULT ''
 
    <h3 id="联合索引的最左匹配原则的成因">联合索引的最左匹配原则的成因</h3>   
 
