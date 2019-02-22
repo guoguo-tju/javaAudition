@@ -1795,9 +1795,38 @@
 
         - Selectors
 
-          允许单线程处理多个Channel . 如果同时打开多个Channel , 每个Channel流量又很低 , 使用Selector就会很方便 (Channel需要在selector上注册).      
+          允许单线程处理多个Channel . 单线程的轮循机制 , 通过高效定位就绪的channel来决定做什么 . 
+          如果同时打开多个Channel , 每个Channel流量又很低 , 使用Selector就会很方便 (Channel需要在selector上注册).      
 
         ![NIO中Selector,Channel,Buffer](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/NIO%E4%B8%ADSelector%2CChannel%2CBuffer.jpg)
 
-   - 
+   - AIO (Asynchronous IO) :  异步非阻塞IO 
+
+     基于事件和回调机制 , 应用操作直接返回而不会阻塞在那里 ,  当后台处理完成 , 响应线程会调用回调函数 . 
+     
+   ![BIO,NIO,AIO的对比](https://github.com/guoguo-tju/javaAudition/blob/master/src/main/resources/picture/BIO,NIO,AIO%E7%9A%84%E5%AF%B9%E6%AF%94.jpg?raw=true)
+
+
   	
+  	
+ 1. Java中进程和线程的关系
+    - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
+    - 每个线程对应一个JVM实例 , 多个线程共享JVM里的堆 
+    - Java采用单线程编程模型 , 程序会自动创建主线程
+ 
+ 2. 线程的start和run方法的区别
+ 
+    ```java     
+    public static void main(String[] args){
+        Thread t = new Thread(){
+            public void run(){
+                attack();
+            }
+        };
+        t.run();
+        t.start();
+    }
+    ```
+ 
+    - start()方法会创建一个新的子线程并启动
+    - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
