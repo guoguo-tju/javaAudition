@@ -1829,3 +1829,17 @@
  
     - start()方法会创建一个新的子线程并启动
     - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
+    
+    
+
+
+1. Spring的ApplicationContext
+   - ApplicationContext面向使用Spring框架的开发者的 . BeanFactory是Spring框架的基础设施 , 面向Spring的 . ( ApplicationContext是车, BeanFactory是车内的发动机 )
+   - 功能 :
+     - BeanFactory : 能够管理 , 装配Bean
+     - ResourcePatternResolver : 能够加载资源文件
+     - MessageSource : 能够实现国际化等功能
+     - ApplicationEventPublisher : 能够注册监听器 , 实现监听机制 
+2. refresh方法 (spring启动时会调用)
+   - 为IOC容器以及Bean的声明周期管理提供条件
+   - 刷新Spring上下文信息 , 定义Spring上下文加载流程
