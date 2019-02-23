@@ -1833,14 +1833,138 @@
     
     
 
-
-1. Spring的ApplicationContext
+1. Spring IOC
+    - 高层不依赖于底层 , 底层只作为高层的一个成员变量注入 . 
+    
+      优势 :
+    
+      - 避免在各处使用new来创建类 , 可以做到同一维护
+    
+      - 创建实例的时候不需要了解其中的细节 (蓝色框内是被隐藏掉的细节 , spring就像一个工厂一样 , 你需求什么它给你什么 )
+    
+        ![ioc的优势](C:\Users\Administrator\Desktop\imooc\ioc的优势.png)
+    
+    - ioc在启动时的过程
+    
+      ![ioc在启动时](C:\Users\Administrator\Desktop\imooc\ioc在启动时.png)
+    
+    - BeanDefiniton
+    
+      Spring启动时会将xml / 注解里的Bean的定义解析为BeanDefinition. 
+    
+    - BeanDefinitonRegistry
+    
+      提供向IOC容器注册BeanDefinition对象的方法 .  以BeanName为key , BeanDefinition为vaule存入beanDefinitionMap里 . 
+      
+2. Spring的ApplicationContext
    - ApplicationContext面向使用Spring框架的开发者的 . BeanFactory是Spring框架的基础设施 , 面向Spring的 . ( ApplicationContext是车, BeanFactory是车内的发动机 )
    - 功能 :
      - BeanFactory : 能够管理 , 装配Bean
      - ResourcePatternResolver : 能够加载资源文件
      - MessageSource : 能够实现国际化等功能
      - ApplicationEventPublisher : 能够注册监听器 , 实现监听机制 
-2. refresh方法 (spring启动时会调用)
+3. refresh方法 (spring启动时会调用)
    - 为IOC容器以及Bean的声明周期管理提供条件
    - 刷新Spring上下文信息 , 定义Spring上下文加载流程
+   
+   
+   
+   
+2. 
+
+
+
+1. Spring的getBean方法逻辑
+
+   - 转换beanName .
+
+     ```java
+     final String beanName = transformedBeanName(name);
+     ```
+
+   - 检查缓存中有没有bean实例 , 有的话加载
+
+     ```java
+     Object sharedInstance = getSingleton(beanName);
+     if (sharedInstance != null && args == null) {
+     	....
+     	bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
+     }
+     ```
+
+   - 没有的话开始实例bean
+
+   - 检测parentBeanFactory是否有需要的bean
+
+     ```java
+     BeanFactory parentBeanFactory = getParentBeanFactory();
+     ```
+
+   - 初始化bean所依赖的bean , getBean递归创建所需的bean
+
+     ```java
+     String[] dependsOn = mbd.getDependsOn();
+     if (dependsOn != null) {
+     	getBean(..) ;
+     }
+     ```
+
+   - 各种创建bean
+
+     ```java
+     bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+     ```
+
+2. Spring Bean的作用域
+   - singleton : spring的默认作用域 , 容器里拥有唯一的Bean实例
+   - prototype : 针对每个getBean请求 , 容器都会创建一个Bean实例
+   - request : 会为每个Http请求创建一个Bean实例
+   - session : 会为每个session创建一个Bean实例
+   - globalSession : 会为每个全局Http Session创建一个Bean实例 , 该作用域仅对Protlet有效
+3. Spring Bean的生命周期
+   - 创建过程
+     - 实例化Bean , 以及设置bean属性
+     - Aware( 注入Bean ID , BeanFactory和AppCtx )
+     - BeanPostProcessor( s ).postProcessBeforeInitialization , 在bean实例化之后 , 进行一些自定义bean的处理逻辑 .  aop相关 . 
+     - IntializingBean(s).afterPropertiesSet , 做一些属性被设置之后的自定义的事情 . 
+     - Bean的init方法做一些初始化操作 . 
+     - BeanPostProcessor(s).postProcessAfterInitialization , 在bean实例化之后 , 进行一些自定义bean的处理逻辑 .  aop相关 . 
+     - Bean初始化完毕
+   - 销毁过程
+     - 若实现了DisposableBean接口 , 则会调用destroy方法
+     - 若配置了destry-method属性 , 则会调用其配置的销毁方法
+
+4. Spring AOP
+
+   - 常用来记录web请求的通用日志信息 , 请求来源的ip , 请求的url , 请求返回的信息
+   - AOP主要名词概念
+     - Aspect : 通用功能的代码实现 ,比如 HttpLogAspect 类.
+     - Target : 被织入Aspect的对象 , 比如controller类 . 
+     - Join Point : 可以作为切入点的机会 , 所有方法都可以作为切入点 . 
+     - Pointcut : Aspect实际被应用在的Join Point , 支持正则 . @Pointcut("execution(* com.zichan360.controller..*.*(..))")
+     - Advice : 类里点方法以及这个方法如何织入目标方法的方式 
+     - Weaving : Aop的实现过程
+   - Advice的种类
+     - 前置通知( Before )
+     - 后置通知( AfterReturning )
+     - 异常通知( AfterThrowing )
+     - 最终通知( After )
+     - 环绕通知( Around )
+
+5. Spring AOP的实现 : 
+
+   - JdkProxy和Cglib
+
+   - 由AopProxyFactory根据AdvisedSupport对象的配置来决定
+   - 默认策略: 如果目标是接口用JDKProxy来实现 , 否则用Cglib
+   - JDKProxy的核心 : InvocationHandler接口和Proxy类 , 通过Java内部反射机制实现
+   - Cglib : 通过ASM(能够修改字节码的框架)修改字节码 , 以继承的方式动态生成目标类的代理 , 如果目标类标记为final 的 ,是无法用Cglib来做动态代理 .  
+   - 反射机制在生成类的过程中比较高效 , ASM在生成类之后的执行过程中比较高效 ( 可以通过对ASM生成的类进行缓存来避免ASM这种缺点 )
+   - Spring里的代理模式的实现
+     - 真实实现类的逻辑包含在了getBean方法里 , 所以spring只能作用于spring中的bean . 
+     - getBean方法返回的实际上是代理类
+     - 代理类实例是Spring采用JDK Proxy或Cglib动态生成的
+
+6. Spting事务 : ACID , 隔离级别 , 事务传播
+
+   
