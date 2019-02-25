@@ -1807,7 +1807,195 @@
    ![BIO,NIO,AIO的对比](https://github.com/guoguo-tju/javaAudition/blob/master/src/main/resources/picture/BIO,NIO,AIO%E7%9A%84%E5%AF%B9%E6%AF%94.jpg?raw=true)
 
 
+
+<br>
+
+<h2 id="Spring">Spring</h2>
+
+<br>
   	
+  	
+  <h3 id="SpringIOC">SpringIOC</h3>       	
+
+   - 高层不依赖于底层 , 底层只作为高层的一个成员变量注入 . 
+    
+      优势 :
+    
+      - 避免在各处使用new来创建类 , 可以做到同一维护
+    
+      - 创建实例的时候不需要了解其中的细节 (蓝色框内是被隐藏掉的细节 , spring就像一个工厂一样 , 你需求什么它给你什么 )
+    
+        ![ioc的优势](C:\Users\Administrator\Desktop\imooc\ioc的优势.png)
+    
+   - ioc在启动时的过程
+    
+      ![ioc在启动时](C:\Users\Administrator\Desktop\imooc\ioc在启动时.png)
+    
+   - BeanDefiniton
+    
+      Spring启动时会将xml / 注解里的Bean的定义解析为BeanDefinition. 
+    
+   - BeanDefinitonRegistry
+    
+      提供向IOC容器注册BeanDefinition对象的方法 .  以BeanName为key , BeanDefinition为vaule存入beanDefinitionMap里 . 
+      
+
+  <h3 id="Spring的ApplicationContext">Spring的ApplicationContext</h3>       	      
+      
+   - ApplicationContext面向使用Spring框架的开发者的 . BeanFactory是Spring框架的基础设施 , 面向Spring的 . ( ApplicationContext是车, BeanFactory是车内的发动机 )
+   - 功能 :
+     - BeanFactory : 能够管理 , 装配Bean
+     - ResourcePatternResolver : 能够加载资源文件
+     - MessageSource : 能够实现国际化等功能
+     - ApplicationEventPublisher : 能够注册监听器 , 实现监听机制 
+         	 
+   - refresh方法 (spring启动时会调用)
+     - 为IOC容器以及Bean的声明周期管理提供条件
+     - 刷新Spring上下文信息 , 定义Spring上下文加载流程
+   
+  <h3 id="Spring的getBean">Spring的getBean</h3>       
+
+   - 转换beanName .
+
+     ```java    
+     final String beanName = transformedBeanName(name);
+     ```
+
+   - 检查缓存中有没有bean实例 , 有的话加载
+
+     ```java    
+     Object sharedInstance = getSingleton(beanName);
+     if (sharedInstance != null && args == null) {
+     	....
+     	bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
+     }
+     ```
+
+   - 没有的话开始实例bean
+
+   - 检测parentBeanFactory是否有需要的bean
+
+     ```java    
+     BeanFactory parentBeanFactory = getParentBeanFactory();
+     ```
+
+   - 初始化bean所依赖的bean , getBean递归创建所需的bean
+
+     ```java   
+     String[] dependsOn = mbd.getDependsOn();
+     if (dependsOn != null) {
+     	getBean(..) ;
+     }
+     ```
+
+   - 各种创建bean
+
+     ```java    
+     bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+     ```
+    
+  <h3 id="SpringBean的作用域">SpringBean的作用域</h3>       
+      
+   - singleton : spring的默认作用域 , 容器里拥有唯一的Bean实例
+   - prototype : 针对每个getBean请求 , 容器都会创建一个Bean实例
+   - request : 会为每个Http请求创建一个Bean实例
+   - session : 会为每个session创建一个Bean实例
+   - globalSession : 会为每个全局Http Session创建一个Bean实例 , 该作用域仅对Protlet有效
+   
+  <h3 id="SpringBean的生命周期">SpringBean的生命周期</h3>    
+     
+   - 创建过程
+     - 实例化Bean , 以及设置bean属性
+     - Aware( 注入Bean ID , BeanFactory和AppCtx )
+     - BeanPostProcessor( s ).postProcessBeforeInitialization , 在bean实例化之后 , 进行一些自定义bean的处理逻辑 .  aop相关 . 
+     - IntializingBean(s).afterPropertiesSet , 做一些属性被设置之后的自定义的事情 . 
+     - Bean的init方法做一些初始化操作 . 
+     - BeanPostProcessor(s).postProcessAfterInitialization , 在bean实例化之后 , 进行一些自定义bean的处理逻辑 .  aop相关 . 
+     - Bean初始化完毕
+   - 销毁过程
+     - 若实现了DisposableBean接口 , 则会调用destroy方法
+     - 若配置了destry-method属性 , 则会调用其配置的销毁方法
+
+  <h3 id="SpringAOP">SpringAOP</h3>    
+
+   - 常用来记录web请求的通用日志信息 , 请求来源的ip , 请求的url , 请求返回的信息
+   - AOP主要名词概念
+     - Aspect : 通用功能的代码实现 ,比如 HttpLogAspect 类.
+     - Target : 被织入Aspect的对象 , 比如controller类 . 
+     - Join Point : 可以作为切入点的机会 , 所有方法都可以作为切入点 . 
+     - Pointcut : Aspect实际被应用在的Join Point , 支持正则 . @Pointcut("execution(* com.zichan360.controller..*.*(..))")
+     - Advice : 类里点方法以及这个方法如何织入目标方法的方式 
+     - Weaving : Aop的实现过程
+   - Advice的种类
+     - 前置通知( Before )
+     - 后置通知( AfterReturning )
+     - 异常通知( AfterThrowing )
+     - 最终通知( After )
+     - 环绕通知( Around )
+
+  <h3 id="SpringAOP的实现">SpringAOP的实现</h3>    
+
+   - JdkProxy和Cglib
+
+   - 由AopProxyFactory根据AdvisedSupport对象的配置来决定
+   - 默认策略: 如果目标是接口用JDKProxy来实现 , 否则用Cglib
+   - JDKProxy的核心 : InvocationHandler接口和Proxy类 , 通过Java内部反射机制实现
+   - Cglib : 通过ASM(能够修改字节码的框架)修改字节码 , 以继承的方式动态生成目标类的代理 , 如果目标类标记为final 的 ,是无法用Cglib来做动态代理 .  
+   - 反射机制在生成类的过程中比较高效 , ASM在生成类之后的执行过程中比较高效 ( 可以通过对ASM生成的类进行缓存来避免ASM这种缺点 )
+   - Spring里的代理模式的实现
+     - 真实实现类的逻辑包含在了getBean方法里 , 所以spring只能作用于spring中的bean . 
+     - getBean方法返回的实际上是代理类
+     - 代理类实例是Spring采用JDK Proxy或Cglib动态生成的
+
+     Spting事务 : ACID , 隔离级别 , 事务传播
+
+
+  <h3 id="SpringCloud">SpringCloud</h3>   
+   
+   - **Eureka**
+
+     - Eureka是微服务架构中的注册中心，专门负责服务的注册与发现。
+     - **Eureka** **Client：**负责将这个服务的信息注册到Eureka Server中
+     - **Eureka Server：**注册中心，里面有一个注册表，保存了各个服务所在的机器和端口号
+
+   - **Feign**
+
+     - 服务之间进行通信 , 底层还是http请求
+     - 如果你对某个接口定义了@FeignClient注解，Feign就会针对这个接口创建一个动态代理
+     - 接着你要是调用那个接口，本质就是会调用 Feign创建的动态代理，这是核心中的核心
+     - Feign的动态代理会根据你在接口上的@RequestMapping等注解，来动态构造出你要请求的服务的地址
+     - 最后针对这个地址，发起请求、解析响应
+
+   - **Ribbon**
+
+     - 它的作用是负载均衡，会帮你在每次请求时选择一台机器，均匀的把请求分发到各个机器上
+     - Ribbon的负载均衡默认使用的最经典的Round Robin轮询算法。这是啥？简单来说，就是如果订单服务对库存服务发起10次请求，那就先让你请求第1台机器、然后是第2台机器、第3台机器、第4台机器、第5台机器，接着再来—个循环，第1台机器、第2台机器。。。以此类推。
+
+   - **Ribbon是和Feign以及Eureka紧密协作，完成工作的，具体如下：**
+
+     - 首先Ribbon会从 Eureka Client里获取到对应的服务注册表，也就知道了所有的服务都部署在了哪些机器上，在监听哪些端口号。
+
+     - 然后Ribbon就可以使用默认的Round Robin算法，从中选择一台机器
+
+     - Feign就会针对这台机器，构造并发起请求。
+
+       ![ribbon,Feign,Eureka](C:\Users\Administrator\Desktop\imooc\ribbon,Feign,Eureka.jpg)
+
+   - **Hystrix**
+
+     - 这么多服务互相调用，要是不做任何保护的话，某一个服务挂了，就会引起连锁反应，导致别的服务也挂。比如积分服务挂了，会导致订单服务的线程全部卡在请求积分服务这里，没有一个线程可以工作，瞬间导致订单服务也挂了，别人请求订单服务全部会卡住，无法响应。**就算积分服务挂了，订单服务也可以不用挂啊！**
+     - Hystrix是隔离、熔断以及降级的一个框架。Hystrix会搞很多个小小的线程池，比如订单服务请求库存服务是一个线程池，请求仓储服务是一个线程池，请求积分服务是一个线程池。每个线程池里的线程就仅仅用于请求那个服务。
+     - **现在很不幸，积分服务挂了，会咋样？**当然会导致订单服务里的那个用来调用积分服务的线程都卡死不能工作了！但是由于订单服务调用库存服务、仓储服务的这两个线程池都是正常工作的，所以这两个服务不会受到任何影响。只不过调用积分服务的时候，每次都会报错。**但是如果积分服务都挂了，每次调用都要去卡住几秒钟干啥呢？****有意义吗？当然没有！**所以我们直接对积分服务熔断不就得了，比如在5分钟内请求积分服务直接就返回了，不要去走网络请求卡住几秒钟，这个过程，就是所谓的熔断！
+     - 咱们再来个降级：每次调用积分服务，你就在数据库里记录一条消息，说给某某用户增加了多少积分，因为积分服务挂了，导致没增加成功！这样等积分服务恢复了，你可以根据这些记录手工加一下积分。这个过程，就是所谓的降级。
+
+   ![hystrix](C:\Users\Administrator\Desktop\imooc\hystrix.jpg)
+
+   - **Zuul**
+     - 一般微服务架构中都必然会设计一个网关在里面，像android、ios、pc前端、微信小程序、H5等等，不用去关心后端有几百个服务，就知道有一个网关，所有请求都往网关走，网关会根据请求中的一些特征，将请求转发给后端的各个服务。而且有一个网关之后，还有很多好处，比如可以做统一的降级、限流、认证授权、安全，等等。
+
+   
+
+
   	
  1. Java中进程和线程的关系
     - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
@@ -1832,139 +2020,3 @@
     - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
     
     
-
-1. Spring IOC
-    - 高层不依赖于底层 , 底层只作为高层的一个成员变量注入 . 
-    
-      优势 :
-    
-      - 避免在各处使用new来创建类 , 可以做到同一维护
-    
-      - 创建实例的时候不需要了解其中的细节 (蓝色框内是被隐藏掉的细节 , spring就像一个工厂一样 , 你需求什么它给你什么 )
-    
-        ![ioc的优势](C:\Users\Administrator\Desktop\imooc\ioc的优势.png)
-    
-    - ioc在启动时的过程
-    
-      ![ioc在启动时](C:\Users\Administrator\Desktop\imooc\ioc在启动时.png)
-    
-    - BeanDefiniton
-    
-      Spring启动时会将xml / 注解里的Bean的定义解析为BeanDefinition. 
-    
-    - BeanDefinitonRegistry
-    
-      提供向IOC容器注册BeanDefinition对象的方法 .  以BeanName为key , BeanDefinition为vaule存入beanDefinitionMap里 . 
-      
-2. Spring的ApplicationContext
-   - ApplicationContext面向使用Spring框架的开发者的 . BeanFactory是Spring框架的基础设施 , 面向Spring的 . ( ApplicationContext是车, BeanFactory是车内的发动机 )
-   - 功能 :
-     - BeanFactory : 能够管理 , 装配Bean
-     - ResourcePatternResolver : 能够加载资源文件
-     - MessageSource : 能够实现国际化等功能
-     - ApplicationEventPublisher : 能够注册监听器 , 实现监听机制 
-3. refresh方法 (spring启动时会调用)
-   - 为IOC容器以及Bean的声明周期管理提供条件
-   - 刷新Spring上下文信息 , 定义Spring上下文加载流程
-   
-   
-   
-   
-2. 
-
-
-
-1. Spring的getBean方法逻辑
-
-   - 转换beanName .
-
-     ```java
-     final String beanName = transformedBeanName(name);
-     ```
-
-   - 检查缓存中有没有bean实例 , 有的话加载
-
-     ```java
-     Object sharedInstance = getSingleton(beanName);
-     if (sharedInstance != null && args == null) {
-     	....
-     	bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
-     }
-     ```
-
-   - 没有的话开始实例bean
-
-   - 检测parentBeanFactory是否有需要的bean
-
-     ```java
-     BeanFactory parentBeanFactory = getParentBeanFactory();
-     ```
-
-   - 初始化bean所依赖的bean , getBean递归创建所需的bean
-
-     ```java
-     String[] dependsOn = mbd.getDependsOn();
-     if (dependsOn != null) {
-     	getBean(..) ;
-     }
-     ```
-
-   - 各种创建bean
-
-     ```java
-     bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
-     ```
-
-2. Spring Bean的作用域
-   - singleton : spring的默认作用域 , 容器里拥有唯一的Bean实例
-   - prototype : 针对每个getBean请求 , 容器都会创建一个Bean实例
-   - request : 会为每个Http请求创建一个Bean实例
-   - session : 会为每个session创建一个Bean实例
-   - globalSession : 会为每个全局Http Session创建一个Bean实例 , 该作用域仅对Protlet有效
-3. Spring Bean的生命周期
-   - 创建过程
-     - 实例化Bean , 以及设置bean属性
-     - Aware( 注入Bean ID , BeanFactory和AppCtx )
-     - BeanPostProcessor( s ).postProcessBeforeInitialization , 在bean实例化之后 , 进行一些自定义bean的处理逻辑 .  aop相关 . 
-     - IntializingBean(s).afterPropertiesSet , 做一些属性被设置之后的自定义的事情 . 
-     - Bean的init方法做一些初始化操作 . 
-     - BeanPostProcessor(s).postProcessAfterInitialization , 在bean实例化之后 , 进行一些自定义bean的处理逻辑 .  aop相关 . 
-     - Bean初始化完毕
-   - 销毁过程
-     - 若实现了DisposableBean接口 , 则会调用destroy方法
-     - 若配置了destry-method属性 , 则会调用其配置的销毁方法
-
-4. Spring AOP
-
-   - 常用来记录web请求的通用日志信息 , 请求来源的ip , 请求的url , 请求返回的信息
-   - AOP主要名词概念
-     - Aspect : 通用功能的代码实现 ,比如 HttpLogAspect 类.
-     - Target : 被织入Aspect的对象 , 比如controller类 . 
-     - Join Point : 可以作为切入点的机会 , 所有方法都可以作为切入点 . 
-     - Pointcut : Aspect实际被应用在的Join Point , 支持正则 . @Pointcut("execution(* com.zichan360.controller..*.*(..))")
-     - Advice : 类里点方法以及这个方法如何织入目标方法的方式 
-     - Weaving : Aop的实现过程
-   - Advice的种类
-     - 前置通知( Before )
-     - 后置通知( AfterReturning )
-     - 异常通知( AfterThrowing )
-     - 最终通知( After )
-     - 环绕通知( Around )
-
-5. Spring AOP的实现 : 
-
-   - JdkProxy和Cglib
-
-   - 由AopProxyFactory根据AdvisedSupport对象的配置来决定
-   - 默认策略: 如果目标是接口用JDKProxy来实现 , 否则用Cglib
-   - JDKProxy的核心 : InvocationHandler接口和Proxy类 , 通过Java内部反射机制实现
-   - Cglib : 通过ASM(能够修改字节码的框架)修改字节码 , 以继承的方式动态生成目标类的代理 , 如果目标类标记为final 的 ,是无法用Cglib来做动态代理 .  
-   - 反射机制在生成类的过程中比较高效 , ASM在生成类之后的执行过程中比较高效 ( 可以通过对ASM生成的类进行缓存来避免ASM这种缺点 )
-   - Spring里的代理模式的实现
-     - 真实实现类的逻辑包含在了getBean方法里 , 所以spring只能作用于spring中的bean . 
-     - getBean方法返回的实际上是代理类
-     - 代理类实例是Spring采用JDK Proxy或Cglib动态生成的
-
-6. Spting事务 : ACID , 隔离级别 , 事务传播
-
-   
