@@ -1841,11 +1841,11 @@
     
       - 创建实例的时候不需要了解其中的细节 (蓝色框内是被隐藏掉的细节 , spring就像一个工厂一样 , 你需求什么它给你什么 )
     
-        ![ioc的优势](C:\Users\Administrator\Desktop\imooc\ioc的优势.png)
+        ![ioc的优势](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ioc%E7%9A%84%E4%BC%98%E5%8A%BF.png)
     
    - ioc在启动时的过程
     
-      ![ioc在启动时](C:\Users\Administrator\Desktop\imooc\ioc在启动时.png)
+      ![ioc在启动时](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ioc%E5%9C%A8%E5%90%AF%E5%8A%A8%E6%97%B6.png)
     
    - BeanDefiniton
     
@@ -1995,7 +1995,7 @@
 
      - Feign就会针对这台机器，构造并发起请求。
 
-       ![ribbon,Feign,Eureka](C:\Users\Administrator\Desktop\imooc\ribbon,Feign,Eureka.jpg)
+       ![ribbon,Feign,Eureka](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ribbon%2CFeign%2CEureka.jpg)
 
    - **Hystrix**
 
@@ -2004,7 +2004,7 @@
      - **现在很不幸，积分服务挂了，会咋样？**当然会导致订单服务里的那个用来调用积分服务的线程都卡死不能工作了！但是由于订单服务调用库存服务、仓储服务的这两个线程池都是正常工作的，所以这两个服务不会受到任何影响。只不过调用积分服务的时候，每次都会报错。**但是如果积分服务都挂了，每次调用都要去卡住几秒钟干啥呢？****有意义吗？当然没有！**所以我们直接对积分服务熔断不就得了，比如在5分钟内请求积分服务直接就返回了，不要去走网络请求卡住几秒钟，这个过程，就是所谓的熔断！
      - 咱们再来个降级：每次调用积分服务，你就在数据库里记录一条消息，说给某某用户增加了多少积分，因为积分服务挂了，导致没增加成功！这样等积分服务恢复了，你可以根据这些记录手工加一下积分。这个过程，就是所谓的降级。
 
-   ![hystrix](C:\Users\Administrator\Desktop\imooc\hystrix.jpg)
+   ![hystrix](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/hystrix.jpg)
 
    - **Zuul**
      - 一般微服务架构中都必然会设计一个网关在里面，像android、ios、pc前端、微信小程序、H5等等，不用去关心后端有几百个服务，就知道有一个网关，所有请求都往网关走，网关会根据请求中的一些特征，将请求转发给后端的各个服务。而且有一个网关之后，还有很多好处，比如可以做统一的降级、限流、认证授权、安全，等等。
