@@ -1,6 +1,18 @@
 
-# java面试知识点
+# java进阶知识点
 
+<br>
+
+#### 参考自:
+   * 慕课网课程 : [剑指java面试](https://coding.imooc.com/learn/list/303.html)
+   * 极客时间课程 : [java核心技术36讲](https://time.geekbang.org/column/intro/82)
+   * 微信公众号 : 
+        * 石杉的架构笔记
+        * 程序猿DD
+        * 猿天地 等等
+   * 阿里的<<码出高效-Java开发手册>>
+   * 官网 以及各种技术主页
+                                
 <br>
 
 ### 网络知识
