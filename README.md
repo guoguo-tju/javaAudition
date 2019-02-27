@@ -101,6 +101,22 @@
 * [BIO/NIO/AIO的区别](#BIO/NIO/AIO的区别)
 
 
+### Spring
+* [SpringIOC](#SpringIOC)
+* [Spring的ApplicationContext](#Spring的ApplicationContext)
+* [Spring的getBean](#Spring的getBean)
+* [SpringBean的作用域](#SpringBean的作用域)
+* [SpringBean的生命周期](#SpringBean的生命周期)
+* [SpringAOP](#SpringAOP)
+* [SpringCloud](#SpringCloud)
+* [注册中心Eureka内部原理](#注册中心Eureka内部原理)
+
+### 分布式架构
+* [微服务架构中如何保证整套系统的高可用](#微服务架构中如何保证整套系统的高可用)
+* [TCC分布式事务](#TCC分布式事务)
+
+
+
 
 <br>
 
@@ -1994,35 +2010,7 @@
      - 一般微服务架构中都必然会设计一个网关在里面，像android、ios、pc前端、微信小程序、H5等等，不用去关心后端有几百个服务，就知道有一个网关，所有请求都往网关走，网关会根据请求中的一些特征，将请求转发给后端的各个服务。而且有一个网关之后，还有很多好处，比如可以做统一的降级、限流、认证授权、安全，等等。
 
    
-
-
-  	
- 1. Java中进程和线程的关系
-    - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
-    - 每个线程对应一个JVM实例 , 多个线程共享JVM里的堆 
-    - Java采用单线程编程模型 , 程序会自动创建主线程
- 
- 2. 线程的start和run方法的区别
- 
-    ```java     
-    public static void main(String[] args){
-        Thread t = new Thread(){
-            public void run(){
-                attack();
-            }
-        };
-        t.run();
-        t.start();
-    }
-    ```
- 
-    - start()方法会创建一个新的子线程并启动
-    - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
-    
-    
-
-
-1. 注册中心Eureka内部原理
+  <h3 id="注册中心Eureka内部原理">注册中心Eureka内部原理</h3>   
 
    - Eureka简介
 
@@ -2071,8 +2059,14 @@
        - 尽可能保证了内存注册表数据不会出现频繁的读写冲突问题。
 
        - 并且进一步保证对Eureka Server的大量请求，都是快速从纯内存走，性能极高。
-
-2. 微服务架构中，到底如何保证整套系统的高可用
+  
+  
+  
+  
+<h2 id="分布式架构">分布式架构</h3>       
+  
+  
+  <h3 id="微服务架构中如何保证整套系统的高可用">微服务架构中如何保证整套系统的高可用</h3>     
 
    - 微服务架构本身**最最核心**的保障高可用的措施，就是两点：
 
@@ -2109,7 +2103,8 @@
 
        - 如果mysql挂了，你可以把操作日志记录到es里去，后面再慢慢恢复数据。
 
-3.  TCC分布式事务
+
+  <h3 id="TCC分布式事务">TCC分布式事务</h3>     
 
    - 微服务架构相互调用的服务之间 . 比如 :
 
@@ -2169,5 +2164,30 @@
    
 
 
+
+  	
+ 1. Java中进程和线程的关系
+    - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
+    - 每个线程对应一个JVM实例 , 多个线程共享JVM里的堆 
+    - Java采用单线程编程模型 , 程序会自动创建主线程
+ 
+ 2. 线程的start和run方法的区别
+ 
+    ```java     
+    public static void main(String[] args){
+        Thread t = new Thread(){
+            public void run(){
+                attack();
+            }
+        };
+        t.run();
+        t.start();
+    }
+    ```
+ 
+    - start()方法会创建一个新的子线程并启动
+    - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
+    
+    
     
     
