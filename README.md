@@ -126,15 +126,16 @@
 
 
 
-<h2 id="参考书籍以课程">参考书籍以课程</h2>
-   * 慕课网课程 : [剑指java面试](https://coding.imooc.com/learn/list/303.html)
-   * 极客时间课程 : [java核心技术36讲](https://time.geekbang.org/column/intro/82)
-   * 微信公众号 : 
-        * 石杉的架构笔记
-        * 程序猿DD
-        * 猿天地 等等
-   * 阿里的《码出高效-Java开发手册》
-   * 官网 以及各种技术主页
+<h2 id="参考书籍以课程">参考书籍以课程</h2>    
+
+   * 慕课网课程 : [剑指java面试](https://coding.imooc.com/learn/list/303.html)     
+   * 极客时间课程 : [java核心技术36讲](https://time.geekbang.org/column/intro/82)     
+   * 微信公众号 :     
+        * 石杉的架构笔记    
+        * 程序猿DD    
+        * 猿天地 等等    
+   * 阿里的《码出高效-Java开发手册》     
+   * 官网 以及各种技术主页     
 
 
 <br>
@@ -2187,7 +2188,7 @@
 
 - **可靠消息最终一致性方案的核心流程**
 
-  ![可靠消息最终一致性方案](C:\Users\Administrator\Desktop\imooc\可靠消息最终一致性方案.png)
+  ![可靠消息最终一致性方案](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%8F%AF%E9%9D%A0%E6%B6%88%E6%81%AF%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88.png)
 
   - **上游服务投递消息**
 
@@ -2224,7 +2225,7 @@
 
   - 这套方案里保障高可用性最大的一个依赖点，就是**MQ的高可用性**。MQ一旦完全不可用，就会导致业务系统的各个服务之间无法通过MQ来投递消息，导致业务流程中断。这种情况，就需要针对这套分布式事务方案实现一套高可用保障机制。
 
-    ![基于KV存储的队列支持的高可用降级方案](C:\Users\Administrator\Desktop\imooc\基于KV存储的队列支持的高可用降级方案.jpg)
+    ![基于KV存储的队列支持的高可用降级方案](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%9F%BA%E4%BA%8EKV%E5%AD%98%E5%82%A8%E7%9A%84%E9%98%9F%E5%88%97%E6%94%AF%E6%8C%81%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%99%8D%E7%BA%A7%E6%96%B9%E6%A1%88.jpg)
 
   - 自行封装MQ客户端组件与故障感知
 
