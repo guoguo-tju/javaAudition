@@ -2271,13 +2271,13 @@
 
 - 通过**Redisson**框架实现
 
-  ![Redisson原理流程图](C:\Users\Administrator\Desktop\imooc\Redisson原理流程图.jpg)
+  ![Redisson原理流程图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/Redisson%E5%8E%9F%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
 
   - **加锁机制**
 
     - 如果该客户端面对的是一个redis cluster集群，他首先会根据hash节点选择一台机器。紧接着，就会发送一段lua脚本到redis上，那段lua脚本如下所示：
 
-      ![lua脚本](C:\Users\Administrator\Desktop\imooc\lua脚本.jpg)
+      ![lua脚本](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/lua%E8%84%9A%E6%9C%AC.jpg)
 
     - 为啥要用lua脚本呢？因为一大坨复杂的业务逻辑，可以通过封装在lua脚本中发送给redis，保证这段复杂业务逻辑执行的**原子性**。
 
