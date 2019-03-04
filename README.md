@@ -2337,11 +2337,6 @@
     - 如果你对某个redis master实例，写入了myLock这种锁key的value，此时会异步复制给对应的master slave实例。但是这个过程中一旦发生redis master宕机，主备切换，redis slave变为了redis master。接着就会导致，客户端2来尝试加锁的时候，在新的redis master上完成了加锁，而客户端1也以为自己成功加了锁。此时就会导致多个客户端对一个分布式锁完成了加锁。**导致各种脏数据的产生**。
 
   
-
-   
-
-
-
   	
  1. Java中进程和线程的关系
     - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
