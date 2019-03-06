@@ -2426,7 +2426,7 @@
 
      - ScheduledExecutorService : 支持Future和定期执行任务
 
-       ![Executor的框架](C:\Users\Administrator\Desktop\imooc\Executor的框架.png)
+       ![Executor的框架](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/Executor%E7%9A%84%E6%A1%86%E6%9E%B6.png)
 
    - ThreadPoolExecutor的构造函数
 
@@ -2444,7 +2444,7 @@
 
    - ThreadPoolExecutor内部的处理流程
 
-     ![ThreadPoolExecutor流程](C:\Users\Administrator\Desktop\imooc\ThreadPoolExecutor流程.png)
+     ![ThreadPoolExecutor流程](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ThreadPoolExecutor%E6%B5%81%E7%A8%8B.png)
 
      - 在刚刚创建ThreadPoolExecutor的时候，核心线程并不会立即启动，而是要等到有任务提交时才会启动，除非调用了prestartCoreThread/prestartAllCoreThreads事先启动核心线程。
      - 等待队列WorkQueue先来接收新的任务 , 将任务排队提交给内部的线程池(静态内部类Worker继承了AQS)
