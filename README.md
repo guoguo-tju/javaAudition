@@ -2382,5 +2382,80 @@
     - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
     
     
+
     
+    
+    
+8. Java线程池
+
+   - newFixedThreadPool( int  nThreads)  
+
+     - 指定工作线程数量的线程池
+
+   - newCachedThreadPool() : 处理大量短时间工作任务的线程池
+
+     - 试图缓存线程并重用 , 当无缓存线程可用时 , 就会创建新的工作线程;
+     - 如果线程闲置的时间超过阈值 , 则会被终止并移出缓存 , 一般是60s ;
+     - 系统长时间闲置的时候 , 不会消耗什么资源;
+
+   - newSingleThreadPool
+
+     - 创建唯一的工作者线程来执行任务 , 如果线程异常结束 , 会有另一个线程取代它;
+
+   - newSingleThreadScheduledExecutor()与newScheduledThreadPool(int corePoolSize)
+
+     - 定时或者周期性的工作调度 , 两者的区别在于单一工作线程还是多个线程;
+
+   - newWorkStealingPool()
+
+     - 内部会构建ForkJoinPool , 利用working-stealing算法 , 并行地处理任务 , 不保证处理顺序 ;
+
+     - Fork/Join框架 
+
+       - 把大任务分割成若干小任务分发给线程池中的工作线程 , 并行执行 , 最终汇总每个小任务结果后得到大任务结果的框架 . ( 原理类似map - reduce )
+
+       - 使用工作窃取算法 , work-stealing算法 : 某个线程从其他队列里窃取任务来执行
+
+         Fork/Join把这些子任务分别放在不同的队列里 , 并为每个队列创建一个单独的线程来执行队列里的任务 ,  完成自己队列任务的工作线程可以从其他busy的队列中窃取任务来执行 . 
+
+   - J.U.C的三个Executor接口
+
+     - Executor : 运行新任务的简单接口 , 将任务提交和任务执行细节解耦
+
+     - ExecutorService : 具备管理执行器和任务生命周期的方法 , 提交任务机制更完善
+
+     - ScheduledExecutorService : 支持Future和定期执行任务
+
+       ![Executor的框架](C:\Users\Administrator\Desktop\imooc\Executor的框架.png)
+
+   - ThreadPoolExecutor的构造函数
+
+     - corePoolSize : 核心线程数量 (长期维持)
+     - maximumPoolSize : 线程不够用时能够创建的最大线程数
+     - workQueue : 任务等待队列
+     - keepAliveTime : 非核心线程无工作任务的等待时间 , 超过时间会被销毁
+     - threadFactory : 创建新线程的工厂 , Executors.defaultThreadFactory()
+     - handler : 饱和策略 ,  等待队列满了且没有空闲的线程 , 继续提交该任务会执行该拒绝策略
+       - AbortPolicy : 直接抛出异常 , 这是默认策略
+       - CallerRunPolicy : 用调用者所在的线程来执行任务
+       - DiscardOldestPolicy : 丢弃队列中靠最前的任务 , 并执行当前任务
+       - DiscardPolicy : 直接丢弃任务
+       - 实现RejectedExecutionHandler接口的自定义handler
+
+   - ThreadPoolExecutor内部的处理流程
+
+     ![ThreadPoolExecutor流程](C:\Users\Administrator\Desktop\imooc\ThreadPoolExecutor流程.png)
+
+     - 在刚刚创建ThreadPoolExecutor的时候，核心线程并不会立即启动，而是要等到有任务提交时才会启动，除非调用了prestartCoreThread/prestartAllCoreThreads事先启动核心线程。
+     - 等待队列WorkQueue先来接收新的任务 , 将任务排队提交给内部的线程池(静态内部类Worker继承了AQS)
+     - ThreadFactory进行创建线程 , 放入Worker
+     - 如果运行的线程少于corePoolSize , 则创建的新线程来维持核心线程的数量
+     - 如果线程池中的线程数量大于等于corePoolSize且小于maximumPoolSize , 则只有当workQueue满时才创建新的线程去处理任务
+     - 如果corePoolSize和maximumPoolSize相同 , 则新任务放入workQueue中
+     - 当线程池shutDown了 , 或者等待队列满了 , 执行RejectExecutionHandler . 
+
+   - 
+
+     
+
     
