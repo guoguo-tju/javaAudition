@@ -2454,7 +2454,20 @@
      - 如果corePoolSize和maximumPoolSize相同 , 则新任务放入workQueue中
      - 当线程池shutDown了 , 或者等待队列满了 , 执行RejectExecutionHandler . 
 
-   - 
+   - 线程池的状态
+   
+     - RUNNING : 能接受新提交的任务 , 并且也能处理阻塞队列中的任务 . 
+     - SHUTDOWN : 不再接受新提交的任务 , 但可以处理存量任务 . 
+     - STOP : 不再接受新提交的任务 , 也不处理存量任务 . 
+     - TIDYING : 所有的任务都已终止 . 
+     - TERMINATED : terminated()方法执行完后进入该状态 . 
+   
+     ![线程池状态转换图](C:\Users\Administrator\Desktop\imooc\线程池状态转换图.png)
+   
+   - 线程池的大小如何选定
+   
+     - CPU密集型 (任务主要计算的) : 线程数 = 核数 + 1 , 线程过多会造成频繁的上下文切换
+     - I/O密集型 (处理较多等待的任务,吞吐量优先) : 线程数 = CPU核数 * ( 1+平均等待时间/平均工作时间 ) 
 
      
 
