@@ -2353,7 +2353,7 @@
 
      - 采用类似ConcurrentHashMap的思想 , **分段加锁** .
 
-       ![高并发超卖的分段加锁](C:\Users\Administrator\Desktop\imooc\高并发超卖的分段加锁.png)
+       ![高并发超卖的分段加锁](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E9%AB%98%E5%B9%B6%E5%8F%91%E8%B6%85%E5%8D%96%E7%9A%84%E5%88%86%E6%AE%B5%E5%8A%A0%E9%94%81.png)
 
      - 就是把你的1000件库存给他拆开，每个库存段是50件库存，比如stock_01对应50件库存，stock_02对应50件库存。接着，每秒1000个请求过来了，好！此时其实可以是自己写一个简单的随机算法，每个请求都是随机在20个分段库存里，选择一个进行加锁。这样就好了，同时可以有最多20个下单请求一起执行，每个下单请求锁了一个库存分段，然后在业务逻辑里面，就对数据库或者是Redis中的那个分段库存进行操作即可 . 这样一下子并发性能可以增长几十倍。
 
