@@ -2462,7 +2462,7 @@
      - TIDYING : 所有的任务都已终止 . 
      - TERMINATED : terminated()方法执行完后进入该状态 . 
    
-     ![线程池状态转换图](C:\Users\Administrator\Desktop\imooc\线程池状态转换图.png)
+     ![线程池状态转换图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.png)
    
    - 线程池的大小如何选定
    
