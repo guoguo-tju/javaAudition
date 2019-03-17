@@ -5,15 +5,15 @@ package com.guoguo.javaAudition;
  *
  * @author guozh
  * @create 2019-02-07 17:50
- *
- *  元空间 :
+ * <p>
+ * 元空间 :
  * Class : HelloWorld - Method : sayHello/setName/main - Field : name
  * Class : System
- *
+ * <p>
  * Java堆 :
  * Object : String( "test" )
  * Object :  HelloWorld
- *
+ * <p>
  * 线程独占 (栈) :
  * 局部变量 test , 保存String 对象的引用 .
  * 局部变量 hw , 保存HelloWorld 对象的引用 .
@@ -33,10 +33,17 @@ public class HelloWorld {
     }
 
     public static void main(String[] args) {
-        int a = 1;
+  /*      int a = 1;
         HelloWorld hw = new HelloWorld();
         hw.setName("test");
-        hw.sayHello();
+        hw.sayHello();*/
+        String a = "a";
+        String b = "a";
+        System.out.println(a == b);
+        String c = new String("c");
+        String d = new String("c");
+        System.out.println(c == d);
+
     }
 
 }
