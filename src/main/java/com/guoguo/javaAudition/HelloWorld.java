@@ -43,7 +43,6 @@ public class HelloWorld {
         String c = new String("c");
         String d = new String("c");
         System.out.println(c == d);
-
     }
 
 }

@@ -2406,6 +2406,22 @@
     - start()方法会创建一个新的子线程并启动
     - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
     
+3. 线程的状态
+   - 新建(New) : 创建后尚未启动的线程的状态
+   - 运行(Runnable) : 包含Running 和 Ready
+   - 无限期等待( Waiting ) : 不会被分配CPU执行时间 , 需要显示被唤醒
+   - 限期等待(Timed Waiting) : 在一定时间后会由系统自动唤醒
+   - 阻塞(Blocked) : 等待获取排它锁
+   - 结束(Terminated) : 已终止线程的状态 , 线程已经结束执行
+     - 已经结束的线程不能再调用start方法 : t.join()之后再调用t.start()会抛出异常
+     - t.join()  程序在main线程中调用t1线程的join方法，则main线程放弃CPU控制权，并返回t1线程继续执行直到线程t1执行完毕 , 所以结果是t1线程执行完后，才到主线程执行
+     
+4. sleep和wait的区别
+   - sleep是Thread类的方法 , wait是object类中定义的方法
+   - sleep方法可以在任何地方使用 ,Thread.sleep只会让出CPU , 不会导致锁行为的改变
+   - wait方法只能在synchronized方法或synchronized块中使用 , Object.wait不仅让出CPU , 还会释放已经占有的锁资源 .  
+
+    
     
 
     
