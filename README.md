@@ -2421,7 +2421,45 @@
    - sleep方法可以在任何地方使用 ,Thread.sleep只会让出CPU , 不会导致锁行为的改变
    - wait方法只能在synchronized方法或synchronized块中使用 , Object.wait不仅让出CPU , 还会释放已经占有的锁资源 .  
 
-    
+5. notify和notifyAll的区别
+
+   - 锁池EntryList 和 等待池WaitSet
+
+     - 假设线程A已经拥有了某个对象(不是类)的锁 , 而其他线程B , C想要调用这个对象的某个synchronized方法(或者块) , 由于该对象的锁正被A占用 , 此时B , C线程就会被阻塞 , 进入一个地方去等待锁的释放 , 这个地方便是对象的锁池 . 
+
+     - 假设线程A调用了某个对象的wait()方法 , 线程A就会释放该对象的锁 , 同时线程A就进入到了该对象的等待池中 , 进入到等待池中的线程不会去竞争该对象的锁 . 
+
+   - notifyAll会让所有处于等待池的线程全部进入锁池去竞争获取锁
+
+   - notify只会随机选取一个处于等待池中的线程进入锁池去竞争获取锁
+
+6. yield
+
+   - 当调用Thread.yield()函数时 , 会给线程调度器一个当前线程愿意让出CPU使用的暗示 , 但是线程调度器可能会忽略这个暗示 . 
+
+     ```java     
+     public class YieldDemo {
+         public static void main(String[] args) {
+             Runnable yieldTask = new Runnable() {
+                 @Override
+                 public void run() {
+                     for (int i = 1; i <= 10; i++) {
+                         System.out.println(Thread.currentThread().getName() + i);
+                         if (i == 5) {
+                             Thread.yield();
+                         }
+                     }
+                 }
+             };
+             Thread t1 = new Thread(yieldTask, "A");
+             Thread t2 = new Thread(yieldTask, "B");
+             t1.start();
+             t2.start();
+         }
+     }
+     ```
+
+         
     
 
     
