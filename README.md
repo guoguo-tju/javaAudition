@@ -2551,7 +2551,7 @@
 
 一道JVM类加载机制的面试题
 
-![jvm加载顺序代码](C:\Users\guozh\Desktop\java面试\jvm加载顺序代码.jpg)
+![jvm加载顺序代码](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jvm%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F%E4%BB%A3%E7%A0%81.jpg)
 
 - 请问这段程序的输出是什么
 
