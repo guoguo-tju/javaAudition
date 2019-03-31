@@ -2392,14 +2392,14 @@
 
 <h2 id="多线程">多线程</h3>        
   	
- 1. Java中进程和线程的关系
+  <h3 id="Java中进程和线程的关系">Java中进程和线程的关系</h3>       	
     - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
     - 每个线程对应一个JVM实例 , 多个线程共享JVM里的堆 
     - Java采用单线程编程模型 , 程序会自动创建主线程
+
+  <h3 id="线程的start和run方法的区别">线程的start和run方法的区别</h3>     
  
- 2. 线程的start和run方法的区别
- 
-    ```java     
+   ```java     
     public static void main(String[] args){
         Thread t = new Thread(){
             public void run(){
@@ -2409,12 +2409,12 @@
         t.run();
         t.start();
     }
-    ```
- 
-    - start()方法会创建一个新的子线程并启动
-    - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
+   ```
+   - start()方法会创建一个新的子线程并启动
+   - run()方法只是Thread中的一个普通方法的调用 , 还是在主线程里执行 
+
+  <h3 id="线程的状态">线程的状态</h3>       
     
-3. 线程的状态
    - 新建(New) : 创建后尚未启动的线程的状态
    - 运行(Runnable) : 包含Running 和 Ready
    - 无限期等待( Waiting ) : 不会被分配CPU执行时间 , 需要显示被唤醒
@@ -2423,13 +2423,13 @@
    - 结束(Terminated) : 已终止线程的状态 , 线程已经结束执行
      - 已经结束的线程不能再调用start方法 : t.join()之后再调用t.start()会抛出异常
      - t.join()  程序在main线程中调用t1线程的join方法，则main线程放弃CPU控制权，并返回t1线程继续执行直到线程t1执行完毕 , 所以结果是t1线程执行完后，才到主线程执行
-     
-4. sleep和wait的区别
+
+  <h3 id="sleep和wait的区别">sleep和wait的区别</h3>            
    - sleep是Thread类的方法 , wait是object类中定义的方法
    - sleep方法可以在任何地方使用 ,Thread.sleep只会让出CPU , 不会导致锁行为的改变
    - wait方法只能在synchronized方法或synchronized块中使用 , Object.wait不仅让出CPU , 还会释放已经占有的锁资源 .  
 
-5. notify和notifyAll的区别
+  <h3 id="notify和notifyAll的区别">notify和notifyAll的区别</h3>      
 
    - 锁池EntryList 和 等待池WaitSet
 
@@ -2441,7 +2441,7 @@
 
    - notify只会随机选取一个处于等待池中的线程进入锁池去竞争获取锁
 
-6. yield
+  <h3 id="yield">yield</h3>   
 
    - 当调用Thread.yield()函数时 , 会给线程调度器一个当前线程愿意让出CPU使用的暗示 , 但是线程调度器可能会忽略这个暗示 . 
 
@@ -2466,14 +2466,13 @@
          }
      }
      ```
-
-7. interrupt
+  <h3 id="interrupt">interrupt</h3>   
 
    - 调用interrupt() , 通知线程应该中断了
      - 如果线程处于被阻塞状态 (sleep , wait, join ), 那么线程将立即退出被阻塞状态 , 并抛出一个InterruptedException异常 . 
      - 如果线程处于正常活动状态 , 那么会将该线程的中断标志设置为true , 被设置中断标志的线程讲继续正常运行 , 不受影响 . 只是把其体内的中断状态字段改变，实际还是需要根据业务去处理，比如说判断为中断后是否还要继续执行或者提前结束，此时线程依然处于Running状态。而对于wait或者sleep，由于已经让出执行，则此时咱们连中断状态都设置不了，只能抛出InterruptedException提早结束等待或者阻塞的状态，变回runnable，执行catch的逻辑。
 
-8. 线程之间状态的转换
+  <h3 id="线程之间状态的转换">线程之间状态的转换</h3>   
 
    ![线程状态之间的转换](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2.png)   
          
