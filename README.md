@@ -2458,13 +2458,22 @@
      }
      ```
 
+7. interrupt
+
+   - 调用interrupt() , 通知线程应该中断了
+     - 如果线程处于被阻塞状态 (sleep , wait, join ), 那么线程将立即退出被阻塞状态 , 并抛出一个InterruptedException异常 . 
+     - 如果线程处于正常活动状态 , 那么会将该线程的中断标志设置为true , 被设置中断标志的线程讲继续正常运行 , 不受影响 . 只是把其体内的中断状态字段改变，实际还是需要根据业务去处理，比如说判断为中断后是否还要继续执行或者提前结束，此时线程依然处于Running状态。而对于wait或者sleep，由于已经让出执行，则此时咱们连中断状态都设置不了，只能抛出InterruptedException提早结束等待或者阻塞的状态，变回runnable，执行catch的逻辑。
+
+8. 线程之间状态的转换
+
+   ![线程状态之间的转换](C:\Users\guozhaorong\Desktop\学习\线程状态之间的转换.png)   
          
     
 
     
     
     
-8. Java线程池
+9. Java线程池
 
    - newFixedThreadPool( int  nThreads)  
 
