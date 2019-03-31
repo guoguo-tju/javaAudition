@@ -122,6 +122,15 @@
 * [Redis分布式锁](#Redis分布式锁)
 * [高并发场景下对分布式锁的优化](#高并发场景下对分布式锁的优化)
 
+### 多线程   
+* [Java中进程和线程的关系](#Java中进程和线程的关系)
+* [线程的start和run方法的区别](#线程的start和run方法的区别)
+* [线程的状态](#线程的状态)
+* [sleep和wait的区别](#sleep和wait的区别)
+* [notify和notifyAll的区别](#notify和notifyAll的区别)
+* [yield](#yield)
+* [interrupt](#interrupt)
+* [线程之间状态的转换](#线程之间状态的转换)
 
 
 
@@ -2381,7 +2390,7 @@
       - 消费端，一旦消费处理成功一条消息了，必须返回一个ack给消息中间件，然后消息中间件才能删除这条消息。
 
 
-  
+<h2 id="多线程">多线程</h3>        
   	
  1. Java中进程和线程的关系
     - 启动一个java程序会产生一个进程 , 进程包含至少一个线程
@@ -2466,7 +2475,7 @@
 
 8. 线程之间状态的转换
 
-   ![线程状态之间的转换](C:\Users\guozhaorong\Desktop\学习\线程状态之间的转换.png)   
+   ![线程状态之间的转换](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2.png)   
          
     
 
