@@ -2476,9 +2476,61 @@
 
    ![线程状态之间的转换](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2.png)   
          
+  <h3 id="线程安全问题">线程安全问题</h3>         
+
+   - 诱因
+     - 存在多条线程共同操作这些共享数据( 临界资源 )
+   - 根本解决思路
+     - 同一时刻有且只有一个线程在 操作共享数据 , 其他线程必须等到该线程处理完数据后再对共享数据进行操作 . 
+
+  <h3 id="synchronized">synchronized</h3>       
+
+   - 只能锁对象和锁类
+
+     - 同步代码块synchronized(this) , synchronized(类实例对象) . 同步非静态方法synchronized method  , 锁当前对象的实例对象 .
+     - 同步代码块 synchronized(类.class) , 同步静态方法synchronized static method , 锁当前对象的类对象(Class 对象) . 
+
+   - 实现synchronized的基础
+
+     - Java对象头
+
+       - 对象在堆内存中的布局
+
+         - 对象头
+
+           ![对象头结构](C:\Users\guozhaorong\Desktop\学习\对象头结构.png)
+
+         - 实例数据
+
+         - 对齐填充
+
+     - Monitor 
+
+       - 存在于每个Java对象的对象头中 .
+       - \_WaitSet对应着等待池 , \_EntryList对应着锁池 . 当多个线程访问同一段代码时 , 首先进入\_EntryList集合里面 , 当某线程获取到锁之后就进入\_object区 , 并把\_owner变量设置为当前线程 , 同时计数器\_count就会加1 ; 若线程调用wait方法 , 讲释放当前线程持有的Monitor , \_owner被回复成null , \_count会-1 , 复位别的变量的值, 该线程及objectWaiter会进入\_WaitSet等待被唤醒 .
+
+     - synchronized是可重入的
+
+     - 早期synchronized效率低下的原因 :
+
+       - 早期版本中synchronized属于重量级锁 , 依赖于Mutex Lock实现
+       - 线程之间的切换需要从用户态转换到核心态 , 开销较大 
+
+     - java6以后 , 从JVM层面对synchronized进行了很多优化
+
+       - 自适应自旋 Adaptive Spinning
+       - 锁消除 Lock Eliminate
+       - 锁粗化 Lock Coarsening
+       - 轻量级锁 Lightweight Locking 
+       - 偏向锁 Biased Locking
+       - 为了在线程之间更高效地共享数据 , 解决竞争问题 . 
+
+   - 自旋锁
+
+     - 在很多情况下 , 共享数据的锁定状态只会持续很短的时间 , 为了这段时间去挂起或回复阻塞线程并不值得, 完全可以让另一个没获取到锁的线程在门外等待一会 , 但不让出CPU , 通过让线程执行忙循环等待锁的释放 . 本质上是与阻塞不同的 . CAS
+     - 适用于锁被占用时间短 , 若锁被其他线程长时间占用 , 会带来许多性能上的开销 . 
     
 
-    
     
     
 9. Java线程池
