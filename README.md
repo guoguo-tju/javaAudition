@@ -2498,7 +2498,7 @@
 
          - 对象头
 
-           ![对象头结构](C:\Users\guozhaorong\Desktop\学习\对象头结构.png)
+           ![对象头结构](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%AF%B9%E8%B1%A1%E5%A4%B4%E7%BB%93%E6%9E%84.png)
 
          - 实例数据
 
