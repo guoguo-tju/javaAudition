@@ -131,6 +131,11 @@
 * [yield](#yield)
 * [interrupt](#interrupt)
 * [线程之间状态的转换](#线程之间状态的转换)
+* [线程安全问题](#线程安全问题)
+* [synchronized](#synchronized)
+* [ReentrantLock与synchronized的区别](#ReentrantLock与synchronized的区别)
+* [Java线程池](#Java线程池)
+* [一道JVM类加载机制的面试题](#一道JVM类加载机制的面试题)
 
 
 
@@ -2564,7 +2569,7 @@
 
        三种锁状态的区别:
 
-       ![三种锁状态的区别](C:\Users\guozh\Desktop\java面试\三种锁状态的区别.jpg)
+       ![三种锁状态的区别](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E4%B8%89%E7%A7%8D%E9%94%81%E7%8A%B6%E6%80%81%E7%9A%84%E5%8C%BA%E5%88%AB.jpg)
 
   <h3 id="ReentrantLock与synchronized的区别">ReentrantLock与synchronized的区别</h3>       
 
@@ -2574,11 +2579,7 @@
    - sych操作的是对象头Mark Word , lock调用Unsafe类的park()方法 . 
 
 
-
-
-
-    
-9. Java线程池
+  <h3 id="Java线程池">Java线程池</h3>          
 
    - newFixedThreadPool( int  nThreads)  
 
@@ -2662,8 +2663,7 @@
      - I/O密集型 (处理较多等待的任务,吞吐量优先) : 线程数 = CPU核数 * ( 1+平均等待时间/平均工作时间 ) 
 
      
-
-一道JVM类加载机制的面试题
+  <h3 id="一道JVM类加载机制的面试题">一道JVM类加载机制的面试题</h3>          
 
 ![jvm加载顺序代码](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jvm%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F%E4%BB%A3%E7%A0%81.jpg)
 
