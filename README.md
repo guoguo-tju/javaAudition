@@ -2715,4 +2715,42 @@
   
   
 
+
+# Guava
+
+1. spilt拆分
+
+   ```
+   String a = "a,,b,,c";
+   ```
+
+   用string.spilt(",")拆分空值是拆分不掉的,可以用Guava提供的工具类快速去掉空值:
+
+   ```
+   String a = ",a,,b,";
+   String[] split = a.split(",");
+   log.info("原生split拆分: {}", Lists.newArrayList(split));  // 结果["","a","","b"]
+   // Guava拆分
+   List<String> splitGuava = Splitter.on(",")
+   .omitEmptyStrings()   // 去掉空值
+   .trimResults()   // 默认去掉首尾的空格
+   .splitToList(a);
+   log.info("guava的split拆分: {}" , splitGuava); // ["a","b  c"]
+   ```
+
+
+
+2. join合并
+
+   ```
+   // String.join 的两个缺点: 1.不支持一次join多个字符串,后一次join会把前一次覆盖  2.如果join的是一个list,无法过滤到null值
+   // Guava的API
+   String join = Joiner.on(",").skipNulls().join("karl", null, "awesome");
+   log.info("一次join多个字符串: {}", join);
+   
+   String join1 = Joiner.on(",").skipNulls().join(Lists.newArrayList("karl", null, "awesome"));
+   log.info("自动去除list中空值: {}", join1);
+   ```
+
+   
       
