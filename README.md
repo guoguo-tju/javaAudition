@@ -1954,6 +1954,7 @@
    - globalSession : 会为每个全局Http Session创建一个Bean实例 , 该作用域仅对Protlet有效
    
   <h3 id="SpringBean的生命周期">SpringBean的生命周期</h3>    
+     https://juejin.im/post/5c3c00eae51d45522578e815
      
    - 创建过程
      - 实例化Bean , 以及设置bean属性
@@ -1964,8 +1965,8 @@
      - BeanPostProcessor(s).postProcessAfterInitialization , 在bean实例化之后 , 进行一些自定义bean的处理逻辑 .  aop相关 . 
      - Bean初始化完毕
    - 销毁过程
-     - 若实现了DisposableBean接口 , 则会调用destroy方法
      - 若配置了destry-method属性 , 则会调用其配置的销毁方法
+     - 若实现了DisposableBean接口 , 则会调用destroy方法
 
   <h3 id="SpringAOP">SpringAOP</h3>    
 
