@@ -138,19 +138,9 @@
 * [一道JVM类加载机制的面试题](#一道JVM类加载机制的面试题)
 
 
+### 实用tips
+* [Java中进程和线程的关系](#Java中进程和线程的关系)
 
-
-
-<h2 id="参考书籍及课程">参考书籍及课程</h2>    
-
-   * 慕课网课程 : [剑指java面试](https://coding.imooc.com/learn/list/303.html)     
-   * 极客时间课程 : [java核心技术36讲](https://time.geekbang.org/column/intro/82)     
-   * 微信公众号 :     
-        * 石杉的架构笔记    
-        * 程序猿DD    
-        * 猿天地 等等    
-   * 阿里的《码出高效-Java开发手册》     
-   * 官网 以及各种技术主页     
 
 
 <br>
@@ -2754,4 +2744,16 @@
    ```
 
    
+   
+   
+   
+
+<h2 id="实用tips">实用tips</h3>        
+  	
+  <h3 id="策略模式两种实现思路">策略模式两种实现思路</h3>    
+      	
+   1. 容器类利用spring的BeanFactoryAware , BeanPostProcessor方式  com/guoguo/javaAudition/example/SpringBeanContainer.java:21
+
+   2. 实现类利用@PostConstruct注解方式  com/guoguo/javaAudition/example/StrategyModeContainer.java:16
+
       
