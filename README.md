@@ -2755,5 +2755,145 @@
    1. 容器类利用spring的BeanFactoryAware , BeanPostProcessor方式  com/guoguo/javaAudition/example/SpringBeanContainer.java:21
 
    2. 实现类利用@PostConstruct注解方式  com/guoguo/javaAudition/example/StrategyModeContainer.java:16
+   
+  <h3 id="利用json将对象持久化到数据库">利用json将对象持久化到数据库</h3>    
+      	
+   1. 存: 
+   demoDo.setClazz(demo.getClass.getName());
+   demoDo.setData(JSON.toJSONString(demo));
 
+   2. 取:
+   Class<?> clazz = Class.forName(demoDo.getClazz());
+   retrun (T)JSON.parseObject(demoDo.getData() , clazz);
+
+    
+   <h3 id="Lambda表达式函数式接口">Lambda表达式函数式接口</h3>    
+    
+   使用Lambda表达式实现的接口都有一个共同的特点 , 都是函数式接口.
+    
+    fun(()->{
+    
+    ​	System.out.println("........");
+    
+    })
+    
+   函数式接口: 
+    
+   是一种特殊的接口 , 在这个接口中仅有一个抽象的方法 . 可使用@FunctionalInterface注解来进行修饰.
+    
+   在Java8中增加了一些新的函数式接口 , 在java.util.function包下 , 可以分为四类:
+    
+   1. Supplier  供给型 , 无参数有返回值:   
+   
+    
+       ```java
+       public interface Supplier<T> {
+           T get();
+       }
+       
+       Supplier<Date> dateSupplier = new Date();
+       System.out.println(dateSuppiler.get());
+       ```
+    
+   2. Consumer  消费型 , 有参数无返回值:
+    
+    
+       ```java
+       public interface Consumer<T>{
+           void accept(T t);
+       }
+       
+       Consumer shopping = (x)-> System.out.println("...");
+       ```
+    
+   3. Function  转换型 , 有参数有返回值
+   
+    
+       ```jade
+       public interface Function<T , R>{
+           R apply(T t);
+       }
+       
+       Function<String, Integer> fun = (x) -> Integer.parseInt(x);
+       System.out.println(fun.apply("100"));
+       ```
+    
+   4. Predicate 断言型 , 有参数返回布尔型
+   
+    
+       ```java
+       public interface Predicate<T>{
+           boolean test(T t);
+       }
+       
+       Predicate<Integer> predicate = (num) -> num > 100;
+       System.out.println(predicate.test(100));
+       ```
+    
+   方法引用:
+    
+   如果我们想实现的功能已经存在 , 可以使用方法引用来简化代码 , 方法引用操作符为"::" . 可以引用类的静态方法 , 也可以引用对象的实例方法.
+    
+    ```java
+    // 不使用方法引用
+    Function<String , Integet> fun = (s) -> s.length();
+    System.out.println(fun.apply("123"));
+    
+    // 使用方法引用
+    Function<String , Integer> fun = String::length;
+    System.out.println(fun.apply("123"));
+    ```
+    
+   实用案例:  DO类型的转换
+    
+    ```java
+    private static final Function<Demo, DemoDo> DEMO_2_DO = item -> {
+        if(Objects.isNull(item)){
+            return null;
+        }
+        DemoDo demodo = new DemoDo();
+        BeanUtils.copyProperties(item , demoDo);
+        return demoDO;
+    } 
+    DEMO_2_DO.apply(demo);
+    // 也可以在list.stream的map转化里用
+    list.stream.map(DEMO_2_DO).collect(Collectors.toList());
+    ```
+    
+    
+    
+  <h3 id="线程池的创建demo">线程池的创建demo</h3> 
+    
+    ```java
+    private final ExecutorService THREAD_POOL;
+    
+    @PostConstruct
+    public void init(){
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+    .setNameFormat("thread-process-%d").setUncaughtExceptionHandler(uncaughtExceptionHandler).build();
+        THREAD_POOL = new ThreadPoolExector(1, 1, 0L , TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runable>() , namedThreadFactory);
+        final Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler(){
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e){
+                Log.error(LOGGER , E , "线程 " + t.getName + "执行异常");
+            }
+        }
+    }
+    ```
+    
+    
+    
+  <h3 id="spring事务模版">spring事务模版</h3> 
+    
+    ```
+    <!--spring 事务模版-->
+    <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-tx</artifactId>
+       <version>5.1.2.RELEASE</version>
+    </dependency>
+    ```
+    com/guoguo/javaAudition/example/TransactionTemplateServiceImpl.java:17
+
+    
       

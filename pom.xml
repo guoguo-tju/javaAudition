@@ -48,6 +48,13 @@
 			<version>28.0-jre</version>
 		</dependency>
 
+		<!--spring 事务模版-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>5.1.2.RELEASE</version>
+		</dependency>
+
 
 
 	</dependencies>
