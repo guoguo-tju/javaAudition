@@ -2885,15 +2885,29 @@
     
   <h3 id="spring事务模版">spring事务模版</h3> 
     
-    ```
+   
     <!--spring 事务模版-->
     <dependency>
        <groupId>org.springframework</groupId>
        <artifactId>spring-tx</artifactId>
        <version>5.1.2.RELEASE</version>
     </dependency>
-    ```
+    
     com/guoguo/javaAudition/example/TransactionTemplateServiceImpl.java:17
 
     
-      
+
+  <h3 id="fork-join框架">fork-join框架</h3> 
+
+    
+    com/guoguo/javaAudition/concurrent/forkjoin/ForkJoinDemoTask.java:25
+    
+    Fork-join框架是JAVA7提供的一个用户执行并行任务的框架 ， 把大任务分成若干个小任务 ， 最终汇总每个小任务得到大任务结果。
+    
+    - 将任务划分成多个部分 ， 分别放到不同的计算队列里。
+    - 队列和线程意义映射 ， 如果一个线程完成自己的队列任务 ， 会去其他线程负责的队列里窃取任务。
+    - 线程正常执行时从双端队列的头部去任务 ， 而窃取任务的线程从别人的队列尾部拿线程执行。
+   
+   
+   
+   
