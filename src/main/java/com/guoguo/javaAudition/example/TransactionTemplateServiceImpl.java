@@ -13,7 +13,6 @@ import java.util.concurrent.Callable;
  * @author guozh
  * @create 2020-03-29 18:10
  */
-@Service
 public class TransactionTemplateServiceImpl implements TransactionTemplateService {
 
     @Autowired
