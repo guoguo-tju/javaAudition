@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
  * @author guozh
  * @create 2020-03-29 18:10
  */
+@Service
 public class TransactionTemplateServiceImpl implements TransactionTemplateService {
 
     @Autowired
@@ -30,5 +31,17 @@ public class TransactionTemplateServiceImpl implements TransactionTemplateServic
                throw new RuntimeException("事务处理出现异常" , e);
            }
         });
+    }
+
+
+
+    public static interface Exector<T> extends Callable<T>{
+
+        /**
+         * 失败逻辑
+         * @param e
+         * @return
+         */
+        T onFailed(Exception e);
     }
 }

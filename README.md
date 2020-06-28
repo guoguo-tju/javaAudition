@@ -2909,5 +2909,9 @@
     - 线程正常执行时从双端队列的头部去任务 ， 而窃取任务的线程从别人的队列尾部拿线程执行。
    
    
-   
-   
+
+  <h3 id="job任务">job任务</h3> 
+  
+    com/guoguo/javaAudition/job/JobServiceImpl.java:44
+
+
