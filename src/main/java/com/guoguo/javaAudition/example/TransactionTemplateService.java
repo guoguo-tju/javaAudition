@@ -6,4 +6,7 @@ public interface TransactionTemplateService {
 
     <T> T tx(Callable<T> c);
 
+
+    void tx(Runnable r);
+
 }

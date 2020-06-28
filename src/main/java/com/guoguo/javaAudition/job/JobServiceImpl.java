@@ -3,6 +3,8 @@ package com.guoguo.javaAudition.job;
 import com.alibaba.fastjson.JSON;
 import com.guoguo.javaAudition.example.TransactionTemplateService;
 import com.guoguo.javaAudition.example.TransactionTemplateServiceImpl;
+import com.guoguo.javaAudition.job.machine.Machine;
+import com.guoguo.javaAudition.job.machine.MachineService;
 import com.sun.security.sasl.ntlm.FactoryImpl;
 import jdk.internal.util.EnvUtils;
 import org.slf4j.Logger;
@@ -33,6 +35,9 @@ public class JobServiceImpl implements JobService , ApplicationRunner {
 
     @Autowired
     private JobExecutors jobExecutors;
+
+    @Autowired
+    private MachineService machineService;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JobServiceImpl.class);
@@ -75,8 +80,31 @@ public class JobServiceImpl implements JobService , ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        // 注册宕机迁移回调
+        machineService.registerDowntimeMigrationCallback("MIGRATE_JOB" , this::migrateMachine);
+
         // 启动定时任务 , 扫描整个组件进行处理
         timeCallbackService.runAfter(SCANNER , 3 , TimeUnit.SECONDS , false);
+    }
+
+    /**
+     * job任务宕机迁移逻辑
+     * @param machine
+     */
+    private void migrateMachine(Machine machine) {
+        String failedMachineName = machine.getMachine();
+        String selfMachineName = "selfMachine";
+
+        transactionTemplateService.tx(()->{
+            // 宕机机器下的job任务加锁
+            // select * from job where machine=#{machine} and exec_time < #{execTime} and status = 0 for update
+//            jobMapper.getselfJobWithLock(failedMachineName , new Date());
+
+            // 迁移宕机机器的job到本机
+            // update job set machine=#{selfMachineName} , gmt_modified=CURRENT_TIMESTAMP where machine=#{failedMachineName}
+//            jobMapper.migrateMachine(failedMachineName , selfMachineName);
+        });
+
     }
 
 

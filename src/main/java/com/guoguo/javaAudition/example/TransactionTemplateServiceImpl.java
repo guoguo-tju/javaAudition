@@ -33,6 +33,14 @@ public class TransactionTemplateServiceImpl implements TransactionTemplateServic
         });
     }
 
+    @Override
+    public void tx(Runnable r) {
+        Callable callable = ()->{
+            r.run();
+            return null;
+        };
+        tx(callable);
+    }
 
 
     public static interface Exector<T> extends Callable<T>{
