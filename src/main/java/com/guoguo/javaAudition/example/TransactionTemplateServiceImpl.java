@@ -25,6 +25,9 @@ public class TransactionTemplateServiceImpl implements TransactionTemplateServic
         return transactionTemplate.execute((status)->{
            try {
                T o = c.call();
+               if (status.isRollbackOnly()){
+                   status.setRollbackOnly();
+               }
                return o;
            }catch (Exception e){
 //               Log.error("事务处理出现异常")
