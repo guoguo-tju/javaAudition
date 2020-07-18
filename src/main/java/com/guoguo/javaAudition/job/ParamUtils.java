@@ -2,6 +2,9 @@ package com.guoguo.javaAudition.job;
 
 import com.sun.corba.se.spi.orb.ParserImplBase;
 import com.sun.org.apache.regexp.internal.RE;
+import com.sun.org.apache.xalan.internal.xsltc.dom.SingleNodeCounter;
+
+import java.util.Collection;
 
 /**
  * 描述:
@@ -69,6 +72,51 @@ public class ParamUtils {
         }
         sbuf.append(messagePattern.substring(i , messagePattern.length()));
         return sbuf.toString();
+    }
+
+    /**
+     * 校验是否为true , 非true将抛出 IllegalParamException
+     * @param param
+     * @param format
+     * @param args
+     */
+    static public void assertTrue(boolean param , String format , Object... args){
+        if (!param){
+            String msg = format(format , args);
+//            Log.error(LOGGER , "{}" , msg);
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
+    /**
+     * 断言为null , 非null将抛出异常
+     * @param param
+     * @param format
+     * @param args
+     */
+    static public void assertNull(Object param , String format , Object... args){
+        assertTrue(param == null , format , args);
+    }
+
+
+    /**
+     * 断言不为null , 为null将抛出异常
+     * @param param
+     * @param format
+     * @param args
+     */
+    static public void assertNotNull(Object param , String format , Object... args){
+        assertTrue(param != null , format , args);
+    }
+
+    /**
+     * 断言集合不为null
+     * @param collection
+     * @param format
+     * @param args
+     */
+    static public void assertNotEmpty(Collection<?> collection , String format , Object... args){
+        assertTrue(collection != null && collection.isEmpty() , format , args);
     }
 
 

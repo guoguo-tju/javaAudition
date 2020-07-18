@@ -44,9 +44,10 @@ public class MachineServiceImpl implements MachineService , ApplicationRunner{
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        timeCallbackService.runAfter(this::heartbeat , HEARTBEAT_INTERVAL , TimeUnit.MINUTES , false);
         // 启动时先记录一次心跳
         recordHeartbeat();
+        timeCallbackService.runAfter(this::heartbeat , HEARTBEAT_INTERVAL , TimeUnit.MINUTES , false);
+
     }
 
 
