@@ -2932,4 +2932,4 @@
     3. Action动作 : 事件触发之后执行的一些业务逻辑
     4. Transition变换: 一个状态被一个事件触发执行了某些行为达到了另一个状态
     
-    
+    com/guoguo/javaAudition/fsm/DemoStateMachineService.java:15

@@ -41,7 +41,7 @@ public class Log {
             return;
         }
         if (logger.isInfoEnabled()){
-            logger.info(ParamUtils.format("[{}]-" + format , getTraceId() , args));
+            logger.info(ParamUtils.format("[{}]-" + format , getTraceId()) , args);
         }
     }
 
@@ -57,7 +57,7 @@ public class Log {
             testLogger.log(Level.WARNING, ParamUtils.format(format , args));
             return;
         }
-        logger.error(ParamUtils.format("[{}]-" + format , getTraceId() , args));
+        logger.error(ParamUtils.format("[{}]-" + format , getTraceId()), args);
     }
 
     /**
