@@ -5,7 +5,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.guoguo.javaAudition.job.ParamUtils;
+import com.guoguo.javaAudition.common.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.guoguo.javaAudition.job.ParamUtils.assertNotEmpty;
-import static com.guoguo.javaAudition.job.ParamUtils.assertNotNull;
-import static com.guoguo.javaAudition.job.ParamUtils.assertNull;
+import static com.guoguo.javaAudition.common.ParamUtils.assertNotEmpty;
+import static com.guoguo.javaAudition.common.ParamUtils.assertNotNull;
+import static com.guoguo.javaAudition.common.ParamUtils.assertNull;
 
 /**
  * 描述:

@@ -1,4 +1,4 @@
-package com.guoguo.javaAudition.job;
+package com.guoguo.javaAudition.common;
 
 import org.joda.time.DateTime;
 

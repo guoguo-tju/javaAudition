@@ -1,15 +1,12 @@
 package com.guoguo.javaAudition;
 
-import com.guoguo.javaAudition.job.DateUtils;
+import com.guoguo.javaAudition.common.DateUtils;
 import com.guoguo.javaAudition.job.TimeCallbackService;
-import com.guoguo.javaAudition.job.TimeCallbackServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.concurrent.TimeUnit;

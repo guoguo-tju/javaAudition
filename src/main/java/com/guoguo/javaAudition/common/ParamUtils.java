@@ -1,8 +1,4 @@
-package com.guoguo.javaAudition.job;
-
-import com.sun.corba.se.spi.orb.ParserImplBase;
-import com.sun.org.apache.regexp.internal.RE;
-import com.sun.org.apache.xalan.internal.xsltc.dom.SingleNodeCounter;
+package com.guoguo.javaAudition.common;
 
 import java.util.Collection;
 

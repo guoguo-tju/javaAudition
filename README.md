@@ -2933,3 +2933,9 @@
     4. Transition变换: 一个状态被一个事件触发执行了某些行为达到了另一个状态
     
     com/guoguo/javaAudition/fsm/DemoStateMachineService.java:15
+
+  <h3 id="线程上下文">线程上下文</h3> 
+  
+    com/guoguo/javaAudition/common/OpsCtx.java:21
+    
+    

@@ -1,12 +1,11 @@
 package com.guoguo.javaAudition.job;
 
 import com.alibaba.fastjson.JSON;
+import com.guoguo.javaAudition.common.ParamUtils;
 import com.guoguo.javaAudition.example.TransactionTemplateService;
 import com.guoguo.javaAudition.example.TransactionTemplateServiceImpl;
 import com.guoguo.javaAudition.job.machine.Machine;
 import com.guoguo.javaAudition.job.machine.MachineService;
-import com.sun.security.sasl.ntlm.FactoryImpl;
-import jdk.internal.util.EnvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,9 @@
-package com.guoguo.javaAudition.fsm;
+package com.guoguo.javaAudition.common;
 
 import com.google.common.base.Throwables;
-import com.guoguo.javaAudition.job.ParamUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.management.LockInfo;
 import java.util.logging.Level;
 
 /**
