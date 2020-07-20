@@ -2939,3 +2939,12 @@
     com/guoguo/javaAudition/common/OpsCtx.java:21
     
     
+        
+    
+  <h3 id="断言">断言</h3> 
+    
+    ```
+    Preconditions.checkNotNull(clazz , "clazz参数不允许为null");
+    Preconditions.checkArgument(result.isSuccess() , result.getMessage());
+    ```
+    
