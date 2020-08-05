@@ -2948,3 +2948,20 @@
     Preconditions.checkArgument(result.isSuccess() , result.getMessage());
     ```
     
+    
+
+
+  <h3 id="Guava Cache">Guava Cache</h3> 
+
+    介绍: https://juejin.im/post/6844903748393926664
+
+    多级缓存: https://juejin.im/post/6844903747160637447
+
+    com/guoguo/javaAudition/guava/CacheDemo.java:26
+
+
+
+  <h3 id="Optional<T>">Optional<T></h3> 
+
+    介绍: https://juejin.im/post/6844903945714794503
+
