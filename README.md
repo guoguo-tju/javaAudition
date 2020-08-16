@@ -2965,3 +2965,7 @@
 
     介绍: https://juejin.im/post/6844903945714794503
 
+
+  <h3 id="基于sequence方式生成全局唯一键">基于sequence方式生成全局唯一键</h3> 
+
+    com/guoguo/javaAudition/sequence/SequenceService.java:41

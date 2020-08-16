@@ -83,6 +83,21 @@ public class TimeCallbackServiceImpl implements TimeCallbackService{
 
     }
 
+    @Override
+    public <T> T wait(Callable<T> target, T defaultValue, long timeout, TimeUnit tm) {
+        try{
+            return wait(target , timeout , tm);
+        }catch (Exception e){
+            LOGGER.error("" , e);
+        }
+        return defaultValue;
+    }
+
+    private <T> T wait(Callable<T> target, long timeout, TimeUnit tm) throws InterruptedException, ExecutionException, TimeoutException {
+        Future<T> future = unboundExecutor.submit(target);
+        return future.get(timeout , tm);
+    }
+
 
     private static class UniqueDelayedCallbackWrapper extends DelayedCallbackWrapper{
         UniqueDelayedCallbackWrapper(Runnable r, long timeout, TimeUnit unit) {
