@@ -20,7 +20,7 @@
 
 <h3 id="分布式篇">分布式篇</h3> 
 
-1. 如何设计一个高并发系统 (每秒上千个请求以上)
+1. 如何设计一个高并发系统 (每秒上千个请求以上
 
    1. **系统拆分**:  将一个大系统拆分为多个子系统 , 用分布式框架dubbo或者spring cloud来搞 , 每个系统对应一个数据库.
 
@@ -64,12 +64,23 @@
 
    1. 消费者
 
-      1. 动态代理:Proxy
+      1. 动态代理:Proxy 
+         1. 动态代理策略 : 默认使用 javassist 动态字节码生成，创建代理类。但是可以通过 spi 扩展机制配置自己的动态代理策略。
       2. 负载均衡:Cluster , 故障转移
+         1. random loadbalance: 
+            1. 默认情况下，dubbo 是 random load balance ，即**随机**调用实现负载均衡，可以对 provider 不同实例**设置不同的权重**，会按照权重来负载均衡，权重越大分配流量越高，一般就用这个默认的就可以了。
+         2. consistanthash loadbalance
+            1. 一致性 Hash 算法，相同参数的请求一定分发到一个 provider 上去，provider 挂掉的时候，会基于虚拟节点均匀分配剩余的流量，抖动不会太大。**如果你需要的不是随机负载均衡**，是要一类请求都到一个节点，那就走这个一致性 Hash 策略。
       3. 通信协议:Protocol , http/rmi/dubbo等协议
+         1. dubbo 协议 :  **默认**就是走 dubbo 协议，单一长连接，进行的是 NIO 异步通信，基于 hessian 作为序列化协议。使用的场景是：传输数据量小（每次请求在 100kb 以内），但是并发量很高。
+         2. rmi 协议: 走 Java 二进制序列化，多个短连接，适合消费者和提供者数量差不多的情况，适用于文件的传输，一般较少用。
+         3. hessian 协议: 走 hessian 序列化协议，多个短连接，适用于提供者数量比消费者数量还多的情况，适用于文件的传输，一般较少用。
+         4. http 协议 : 走 json 序列化。
+         5. webservice : 走 SOAP 文本序列化。
       4. 信息交换: Exchange , Request , Response
       5. 网络通信: Transport , 基于netty/mina实现
       6. 序列化: 封装好的请求序列化成二进制数组 , 通过netty/mina发送出去
+         1. dubbo支持的序列化协议: dubbo 支持 hession、Java 二进制序列化、json、SOAP 文本序列化多种序列化协议。但是 hessian 是其默认的序列化协议。
 
    2. 生产者
 
@@ -81,7 +92,70 @@
 
       ![Dubbo底层调用原理](C:\Users\guozh\Desktop\java\石杉\Dubbo底层调用原理.jpg)
 
-   3. 网络通信netty
+   3. dubbo集群容错策略
+
+      1. #### failover cluster 模式
+
+         1. 失败自动切换，自动重试其他机器，**默认**就是这个，常见于读操作。
+
+      2. #### failfast cluster 模式
+
+         1. 一次调用失败就立即失败，常见于非幂等性的写操作，比如新增一条记录（调用失败就立即失败）
+
+      3. #### failsafe cluster 模式
+
+         1. 出现异常时忽略掉，常用于不重要的接口调用，比如记录日志。
+
+      4. #### failback cluster 模式
+
+         1. 失败了后台自动记录请求，然后定时重发，比较适合于写消息队列这种。
+
+      5. #### forking cluster 模式
+
+         1. **并行调用**多个 provider，只要一个成功就立即返回。常用于实时性要求比较高的读操作，但是会浪费更多的服务资源，可通过 `forks="2"` 来设置最大并行数。
+
+   4. Dubbo的SPI机制
+
+      1. SPI是啥?
+
+         1. spi，简单来说，就是 `service provider interface`，说白了是什么意思呢，比如你有个接口，现在这个接口有 3 个实现类，那么在系统运行的时候对这个接口到底选择哪个实现类呢？这就需要 spi 了，需要**根据指定的配置**或者是**默认的配置**，去**找到对应的实现类**加载进来，然后用这个实现类的实例对象。
+         2. spi 经典的思想体现，大家平时都在用，比如说 jdbc。Java 定义了一套 jdbc 的接口，但是 Java 并没有提供 jdbc 的实现类。但是实际上项目跑的时候，要使用 jdbc 接口的哪些实现类呢？一般来说，我们要**根据自己使用的数据库**，比如 mysql，你就将 `mysql-jdbc-connector.jar` 引入进来；oracle，你就将 `oracle-jdbc-connector.jar` 引入进来。
+
+      2. dubbo 也用了 spi 思想，不过没有用 jdk 的 spi 机制，是自己实现的一套 spi 机制。
+
+         ```
+         Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
+         ```
+
+         Protocol 接口，在系统运行的时候，，dubbo 会判断一下应该选用这个 Protocol 接口的哪个实现类来实例化对象来使用。它会去找一个你配置的 Protocol，将你配置的 Protocol 实现类，加载到 jvm 中来，然后实例化对象，就用你的那个 Protocol 实现类就可以了。
+
+         实例代码: https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/distributed-system/dubbo-spi.md
+
+         ![dubbo的spi机制](C:\Users\guozh\Desktop\java\石杉\dubbo的spi机制.png)
+
+   5. Dubbo的服务治理,服务降级 , 失败重试,超时机制
+
+      1. 服务治理
+
+         1. 调用链路自动生成
+         2. 服务访问压力以及时长统计
+         3. 调用链路失败监控和报警 , 接口的可用率
+         4. 服务分层（避免循环依赖）
+
+      2. 服务降级
+
+         1. 比如说服务 A 调用服务 B，结果服务 B 挂掉了，服务 A 重试几次调用服务 B，还是不行，那么直接降级，走一个备用的逻辑，给用户返回响应.
+         2. 实例代码: https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/distributed-system/dubbo-service-management.md
+
+      3. 失败重试和超时机制
+
+         1. 通过timeout 和 retries两个配置
+
+         2. ```
+            <dubbo:reference id="xxxx" interface="xx" check="true" async="false" retries="3" timeout="2000"/>
+            ```
+
+   6. 网络通信netty
 
       1. 基于NIO实现的
 
@@ -111,6 +185,13 @@
       1. 协议
       2. 网络通信框架
       3. 序列化和反序列化
+   5. 我给大家说个最简单的回答思路：
+      - 上来你的服务就得去注册中心注册吧，你是不是得有个注册中心，保留各个服务的信息，可以用 zookeeper 来做，对吧。
+      - 然后你的消费者需要去注册中心拿对应的服务信息吧，对吧，而且每个服务可能会存在于多台机器上。
+      - 接着你就该发起一次请求了，咋发起？当然是基于动态代理了，你面向接口获取到一个动态代理，这个动态代理就是接口在本地的一个代理，然后这个代理会找到服务对应的机器地址。
+      - 然后找哪个机器发送请求？那肯定得有个负载均衡算法了，比如最简单的可以随机轮询是不是。
+      - 接着找到一台机器，就可以跟它发送请求了，第一个问题咋发送？你可以说用 netty 了，nio 方式；第二个问题发送啥格式数据？你可以说用 hessian 序列化协议了，或者是别的，对吧。然后请求过去了。
+      - 服务器那边一样的，需要针对你自己的服务生成一个动态代理，监听某个网络端口了，然后代理你本地的服务代码。接收到请求的时候，就调用对应的服务代码，对吧。
 
 5. Springcloud底层原理
 
@@ -324,7 +405,15 @@
 
          也可用通过给数据加独占锁(select * from table for update no wait) , 来保证改数据只被一个请求在修改.
 
-3. 画一下系统链路图 , 说一下分布式架构存在的问题
+3. 分布式服务接口请求的顺序性如何保证？
+
+   1. 个人建议是，你们从业务逻辑上设计的这个系统最好是不需要这种顺序性的保证，因为一旦引入顺序性保障，比如使用**分布式锁**，会**导致系统复杂度上升**，而且会带来**效率低下**，热点数据压力过大等问题。
+   2. 方案:
+      1. 首先你得用 dubbo 的一致性 hash 负载均衡策略，将比如某一个订单 id 对应的请求都给分发到某个机器上去，接着就是在那个机器上，因为可能还是多线程并发执行的，你可能得立即将某个订单 id 对应的请求扔一个**内存队列**里去，强制排队，这样来确保他们的顺序性。 https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/distributed-system/distributed-system-request-sequence.md
+      2. 1.HASH分发，将需要保证顺序的请求打到同一台服务器上。 2.引入消息队列 3.分布式锁，请求携带标识，序列号等。
+      3. 接入服务可以用redis毫秒级或版本号有序列表排序，系统根据有序列表中的数据，顺序性消费
+
+4. 画一下系统链路图 , 说一下分布式架构存在的问题
 
    1. 分布式事务 , 核心链路保证数据一致性
 
@@ -840,4 +929,262 @@
 
                4. 如果确实是存在必须先插入，立马要求就查询到，然后立马就要反过来执行一些操作，对这个查询**设置直连主库**。**不推荐**这种方法，你要是这么搞，读写分离的意义就丧失了。
 
-   
+   5. 设计一个高可用系统
+
+      ​	HA? 主备切换.
+
+      1. 一些概念	
+
+         1. 资源隔离: 系统里某一块东西故障了 , 不会耗尽系统所有的资源 , 比如线程资源.
+         2. 限流: 高并发流量进来 , 比如100w/s , 我只让10w/s进来 , 其他流量都拒绝
+         3. 熔断: 系统后端一些依赖挂了 ,比如mysql挂了 , 每次请求都报错,就熔断 , 后续请求过来直接不接收了 , 拒绝访问 , 10min之后再尝试看看mysql恢复了没.
+         4. 降级: mysql挂了 , 系统发现了 , 自动降级 , 从内存里存的少量数据 , 继续提供服务.
+
+      2. Hystrix:
+
+         1. 设计原则
+            1. 阻止任何一个依赖服务耗尽所有的资源，比如 tomcat 中的所有线程资源。
+            2. 避免请求排队和积压，采用限流和 `fail fast` 来控制故障。
+            3. 提供 fallback 降级机制来应对故障。
+            4. 使用资源隔离技术，比如 `bulkhead`（舱壁隔离技术）、`swimlane`（泳道技术）、`circuit breaker`（断路技术）来限制任何一个依赖服务的故障的影响。
+            5. 通过近实时的统计/监控/报警功能，来提高故障发现的速度。
+            6. 通过近实时的属性和配置**热修改**功能，来提高故障处理和恢复的速度。
+            7. 保护依赖服务调用的所有故障情况，而不仅仅只是网络故障情况。
+         2. Hystrix是如何实现他的目标的
+            1. 通过HystrixCommand或者HystrixObservableCommand 来封装对外部依赖的访问请求 , 这个访问请求一般对运行在独立的线程中. 
+            2. 为每一个依赖服务维护一个独立的线程池 , 或者是semaphore , 当线程池已满时 , 直接拒绝对这个服务的调用.
+            3. 对于超出我们设定阈值的服务调用 , 直接进行超时 , 不允许其耗费过长时间阻塞住. 这个超时时间默认是99.5%的访问时间 , 但是一般我们可以自己设置一下.
+            4. 对依赖服务的调用的成功次数 , 失败次数 , 拒绝次数 , 超时次数 , 进行统计.
+            5. 如果对一个依赖服务的调用失败次数超过了一定的阈值 , 自动进行熔断 , 在一定时间内对该服务的调用直接降级 , 一段时间后再自动尝试恢复.
+            6. 当一个服务调用出现失败 , 被拒绝 , 超时 , 短路等异常情况时 , 自动调用fallback降级机制.
+            7. 对属性和配置的修改提供近实时的支持.
+
+      3. 大型电商网站系统详情页的架构
+
+         1. 大型电商网站商品详情页的系统设计中，当商品数据发生变更时，会将变更消息压入 MQ 消息队列中。**缓存服务**从消息队列中消费这条消息时，感知到有数据发生变更，便通过调用数据服务接口，获取变更后的数据，然后将整合好的数据推送至  redis 中。Nginx 本地缓存的数据是有一定的时间期限的，比如说 10 分钟，当数据过期之后，它就会从 redis  获取到最新的缓存数据，并且缓存到自己本地。
+
+            用户浏览网页时，动态将 Nginx 本地数据渲染到本地 html 模板并返回给用户。
+
+            虽然没有直接返回 html 页面那么快，但是因为数据在本地缓存，所以也很快，其实耗费的也就是动态渲染一个 html 页面的性能。如果 html模板发生了变更，不需要将所有的页面重新静态化，也不需要发送请求，没有网络请求的开销，直接将数据渲染进最新的 html 页面模板后响应即可。
+
+            ![大型电商网站详情页架构](C:\Users\guozh\Desktop\java\石杉\大型电商网站详情页架构.png)
+
+         2. 如果系统访问量很高，Nginx 本地缓存过期失效了，redis 中的缓存也被 LRU  算法给清理掉了，那么会有较高的访问量，从缓存服务调用商品服务。但如果此时商品服务的接口发生故障，调用出现了延时，缓存服务全部的线程都被这个调用商品服务接口给耗尽了，每个线程去调用商品服务接口的时候，都会卡住很长时间，后面大量的请求过来都会卡在那儿，此时缓存服务没有足够的线程去调用其它一些服务的接口，从而导致整个大量的商品详情页无法正常显示。
+
+            这其实就是一个商品接口服务故障导致缓存服务资源耗尽的现象。
+
+      4. 资源隔离
+
+         1. 利用线程池实现资源隔离
+
+            1. 对某一个依赖服务的全部请求 , 全部隔离到线程池内 , 对商品服务的每次调用请求都封装在一个command里面. 每次该服务的调用请求都是使用线程池内的线程去执行的 , 线程池内线程的个数决定了请求最大会消耗的线程数. 
+
+               缓存服务默认的商品服务线程大小是 10 个，最多就只有 10 个线程去调用商品服务的接口。即使商品服务接口故障了，最多就只有 10 个线程会 hang 死在调用商品服务接口的路上，缓存服务的 tomcat 内其它的线程还是可以用来调用其它的服务，干其它的事情。
+
+            2. 利用 HystrixCommand 获取单条数据
+
+            3. 利用 HystrixObservableCommand 批量获取数据
+
+               1. 示例代码: https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/high-availability/hystrix-thread-pool-isolation.md
+
+         2. 利用信号量实现资源隔离
+
+            1. 信号量的资源隔离只是起到一个开关的作用，比如，服务 A 的信号量大小为 10，那么就是说它同时只允许有 10 个 tomcat 线程来访问服务 A，其它的请求都会被拒绝，从而达到资源隔离和限流保护的作用。
+            2. 线程池隔离和信号量隔离的区别
+               1. 线程池隔离技术，是用 Hystrix 自己的线程去执行调用 , 控制的是tomcat线程的执行；而信号量隔离技术，是直接让 tomcat 线程去调用依赖服务。信号量隔离，只是一道关卡，信号量有多少，就允许多少个 tomcat 线程通过它，然后去执行。
+               2. 使用场景:
+                  1. **线程池技术**，适合绝大多数场景，比如说我们对依赖服务的网络请求的调用和访问、需要对调用的 timeout 进行控制（捕捉 timeout 超时异常）。
+                  2. **信号量技术**，适合说你的访问不是对外部依赖的访问，而是对内部的一些比较复杂的业务逻辑的访问，并且系统内部的代码，其实不涉及任何的网络请求，那么只要做信号量的普通限流就可以了，因为不需要去捕获 timeout 类似的问题。
+            3. 信号量隔离的实例: https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/high-availability/hystrix-semphore-isolation.md
+
+         3. 细粒度的配置
+
+            1. 指定了 HystrixCommand.run() 的资源隔离策略：`THREAD` or `SEMAPHORE`，一种基于线程池，一种基于信号量。
+
+               ```java
+               // to use thread isolation
+               HystrixCommandProperties.Setter().withExecutionIsolationStrategy(ExecutionIsolationStrategy.THREAD)
+               
+               // to use semaphore isolation
+               HystrixCommandProperties.Setter().withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)
+               ```
+
+            2. command key & command group & command thread pool
+
+               1. **command key** ，代表了一类 command，一般来说，代表了底层的依赖服务的一个接口。
+
+               2. **command group** ，代表了某一个底层的依赖服务，一个依赖服务可能会暴露出来多个接口，每个接口就是一个 command key。command 
+                  group 在逻辑上去组织起来一堆 command key 的调用、统计信息、成功次数、timeout 
+                  超时次数、失败次数等，可以看到某一个服务整体的一些访问情况。一般来说，根据一个服务区划分出一个线程池，command key 默认都是属于同一个线程池的。
+
+               3. **command thread pool** , command group 对应了一个服务，而这个服务暴露出来的几个接口，访问量很不一样，差异非常之大。你可能就希望在这个服务 command 
+                  group 内部，包含的对应多个接口的 command key，做一些细粒度的资源隔离。就是说，对同一个服务的不同接口，使用不同的线程池。如果你的 command key 要用自己的线程池，可以定义自己的 thread pool key .      
+                  
+                         
+                  ```java
+                  private static final Setter cachedSetter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"))
+                                                              .andCommandKey(HystrixCommandKey.Factory.asKey("HelloWorld"))
+                                                                  .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("HelloWorldPool"));
+                  ```    
+                  
+            3. coreSize
+
+               1. 设置线程池的大小，默认是 10。一般来说，用这个默认的 10 个线程大小就够了。
+
+                  ```java 
+                  HystrixThreadPoolProperties.Setter().withCoreSize(int value);
+                  ```
+
+            4. queueSizeRejectionThreshold
+
+               1. 如果说线程池中的 10 个线程都在工作中，没有空闲的线程来做其它的事情，此时再有请求过来，会先进入队列积压。如果说队列积压满了，再有请求过来，就直接 reject，拒绝请求，执行 fallback 降级的逻辑，快速返回。这个参数可以热修改，控制队列的最大大小。
+
+               ```java
+               HystrixThreadPoolProperties.Setter().withQueueSizeRejectionThreshold(int value);
+               ```
+
+            5. maxConcurrentRequests
+
+               1. 设置使用 SEMAPHORE 隔离策略的时候允许访问的最大并发量，超过这个最大并发量，请求直接被 reject。默认值是 10，尽量设置的小一些，因为一旦设置的太大，而且有延时发生，可能瞬间导致 tomcat 本身的线程资源被占满。
+
+               ```java
+               HystrixCommandProperties.Setter().withExecutionIsolationSemaphoreMaxConcurrentRequests(int value);
+               ```
+
+        5. Hystrix执行时内部原理(8大执行步骤)
+
+         1. 创建command.
+
+            ```java
+            // 创建 HystrixCommand
+            HystrixCommand hystrixCommand = new HystrixCommand(arg1, arg2);
+            
+            // 创建 HystrixObservableCommand
+            HystrixObservableCommand hystrixObservableCommand = new HystrixObservableCommand(arg1, arg2);
+            ```
+
+         2. 调用command执行方法
+
+         3. 检查是否开启缓存
+
+            1. 如果这个 command 开启了请求缓存 Request Cache，而且这个调用的结果在缓存中存在，那么直接从缓存中返回结果。否则，继续往后的步骤。
+
+         4. 检查是否开启了断路器
+
+            1. 检查这个 command 对应的依赖服务是否开启了断路器。如果断路器被打开了，那么 Hystrix 就不会执行这个 command，而是直接去执行 fallback 降级机制，返回降级结果。
+
+         5. 检查线程池/队列/信号量是否已满
+
+            1. 如果这个 command 线程池和队列已满，或者 semaphore 信号量已满，那么也不会执行 command，而是直接去调用 fallback 降级机制，同时发送 reject 信息给断路器统计。
+
+         6. 执行command
+
+            1. 调用 HystrixObservableCommand 对象的 construct() 方法(获取多条结果)，或者 HystrixCommand 的 run() 方法来实际执行这个 command(获取单挑结果)。
+            2. 如果是采用线程池方式，并且 HystrixCommand.run() 或者 HystrixObservableCommand.construct() 的执行时间超过了 timeout 时长的话，那么 command 所在的线程会抛出一个 TimeoutException，这时会执行 fallback 降级机制，不会去管 run() 或 construct()返回的值了。另一种情况，如果 command 执行出错抛出了其它异常，那么也会走 fallback 降级。这两种情况下，Hystrix 都会发送异常事件给断路器统计。
+
+         7. 短路健康检查
+
+            1. Hystrix 会把每一个依赖服务的调用成功、失败、Reject、Timeout 等事件发送给 circuit breaker  断路器。断路器就会对这些事件的次数进行统计，根据异常事件发生的比例来决定是否要进行断路（熔断）。如果打开了断路器，那么在接下来一段时间内，会直接断路，返回降级结果。
+
+               如果在之后，断路器尝试执行 command，调用没有出错，返回了正常结果，那么 Hystrix 就会把断路器关闭。
+
+         8. 调用fallback降级机制
+
+            1. 在以下几种情况中，Hystrix 会调用 fallback 降级机制。
+               - 断路器处于打开状态；
+               - 线程池/队列/semaphore满了；
+               - command 执行超时；
+               - run() 或者 construct() 抛出异常。
+            2. 一般在降级机制中，都建议给出一些默认的返回值，比如静态的一些代码逻辑，或者从内存中的缓存中提取一些数据，在这里尽量不要再进行网络请求了。
+
+            ![Hystrix的8个执行步骤](C:\Users\guozh\Desktop\java\石杉\Hystrix的8个执行步骤.jpg)
+
+      6. request cache缓存技术
+
+         1. 首先，有一个概念，叫做 Request Context 请求上下文，一般来说，在一个 web 应用中，如果我们用到了  Hystrix，我们会在一个 filter  里面，对每一个请求都施加一个请求上下文。就是说，每一次请求，就是一次请求上下文。然后在这次请求上下文中，我们会去执行 N 多代码，调用 N  多依赖服务，有的依赖服务可能还会调用好几次。
+         2. 在一次请求上下文中，如果有多个  command，参数都是一样的，调用的接口也是一样的，而结果可以认为也是一样的。那么这个时候，我们可以让第一个 command  执行返回的结果缓存在内存中，然后这个请求上下文后续的其它对这个依赖的调用全部从内存中取出缓存结果就可以了。这样的话，好处在于不用在一次请求上下文中反复多次执行一样的 command，**避免重复执行网络请求，提升整个请求的性能**。
+         3. 举个栗子。比如说我们在一次请求上下文中，请求获取 productId 为 1 的数据，第一次缓存中没有，那么会从商品服务中获取数据，返回最新数据结果，同时将数据缓存在内存中。后续同一次请求上下文中，如果还有获取 productId 为 1 的数据的请求，直接从缓存中取就好了。
+         4. 实例demo : https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/high-availability/hystrix-request-cache.md
+
+      7. fallback降级机制
+
+         1. Hystrix 出现以下四种情况，都会去调用 fallback 降级机制：
+            - 断路器处于打开的状态。
+            - 资源池已满（线程池+队列 / 信号量）。
+            - Hystrix 调用各种接口，或者访问外部依赖，比如 MySQL、Redis、Zookeeper、Kafka 等等，出现了任何异常的情况。
+            - 访问外部依赖的时候，访问时间过长，报了 TimeoutException 异常。
+         2. 两种经典的降级机制
+            1. 纯内存数据
+               在降级逻辑中，你可以在内存中维护一个 ehcache，作为一个纯内存的基于 LRU 自动清理的缓存，让数据放在缓存内。如果说外部依赖有异常，fallback 这里直接尝试从 ehcache 中获取数据。
+            2. 默认值
+               fallback 降级逻辑中，也可以直接返回一个默认值。
+         3. 示例代码:
+            1. 在 `HystrixCommand`，降级逻辑的书写，是通过实现 getFallback() 接口；而在 `HystrixObservableCommand` 中，则是实现 resumeWithFallback() 方法。
+            2. demo : https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/high-availability/hystrix-fallback.md
+
+      8. 断路器配置
+
+         1. Enable	
+
+            1. 控制是否允许断路器工作，包括跟踪依赖服务调用的健康状况，以及对异常情况过多时是否允许触发断路。默认值是 `true`。
+
+               ```java
+               HystrixCommandProperties.Setter()
+                   .withCircuitBreakerEnabled(boolean)
+               ```
+
+         2.  RequestVolumeThreshold
+
+            1. 表示在滑动窗口中，至少有多少个请求，才可能触发断路。Hystrix 经过断路器的流量超过了一定的阈值，才有可能触发断路。比如说，要求在 10s 内经过断路器的流量必须达到 20 个，而实际经过断路器的流量才 10 个，那么根本不会去判断要不要断路。
+
+               ```java
+               HystrixCommandProperties.Setter()
+                   .withCircuitBreakerRequestVolumeThreshold(int)
+               ```
+
+         3. ErrorThresholdPercentage
+
+            1. 表示异常比例达到多少，才会触发断路，默认值是 50(%)。如果断路器统计到的异常调用的占比超过了一定的阈值，比如说在 10s 内，经过断路器的流量达到了 30 个，同时其中异常访问的数量也达到了一定的比例，比如 60% 的请求都是异常（报错 / 超时 / reject），就会开启断路。
+
+               ```java
+               HystrixCommandProperties.Setter()
+                   .withCircuitBreakerErrorThresholdPercentage(int)
+               ```
+
+         4. SleepWindowInMilliseconds
+
+            1. 断路开启，也就是由 close 转换到 open 状态（close -> open）。那么之后在 `SleepWindowInMilliseconds` 时间内，所有经过该断路器的请求全部都会被断路，不调用后端服务，直接走 fallback 降级机制。
+
+               而在该参数时间过后，断路器会变为 `half-open` 半开闭状态，尝试让一条请求经过断路器，看能不能正常调用。如果调用成功了，那么就自动恢复，断路器转为 close 状态。
+
+               ```java
+               HystrixCommandProperties.Setter()
+                   .withCircuitBreakerSleepWindowInMilliseconds(int)
+               ```
+
+         5. 示例demo: https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/high-availability/hystrix-circuit-breaker.md
+
+      9. 限流
+
+         1. Hystrix 通过判断线程池或者信号量是否已满，超出容量的请求，直接 Reject 走降级，从而达到限流的作用。
+         2. 限流是限制对后端的服务的访问量，比如说你对 MySQL、Redis、Zookeeper 以及其它各种后端中间件的资源的访问的限制，其实是为了避免过大的流量直接打死后端的服务。
+
+      10. 超时设置
+
+          1. 般来说，在调用依赖服务的接口的时候，比较常见的一个问题就是**超时**。超时是在一个复杂的分布式系统中，导致系统不稳定，或者系统抖动。出现大量超时，线程资源会被 hang 死，从而导致吞吐量大幅度下降，甚至服务崩溃。
+
+          2. `TimeoutMilliseconds` 默认值是 1000，也就是 1000ms。
+
+             ```java
+             HystrixCommandProperties.Setter()
+                 ..withExecutionTimeoutInMilliseconds(int)
+             ```
+
+          3. TimeoutEnabled 这个参数用于控制是否要打开 timeout 机制，默认值是 true。
+
+             ```java
+             HystrixCommandProperties.Setter()
+                 .withExecutionTimeoutEnabled(boolean)
+             ```
+
+6. 
