@@ -372,6 +372,7 @@
        type字段:    
         system > const > eq_ref > ref > fulltext > ref_or_null > index_merge > unique_subquery > index_subquery > range > index > all  
         当type是index/all时,意味着sql进行了全表扫描,需要优化.  
+        all（全表扫描），const（读常量，最多一条记录匹配），eq_ref（走主键，一般就最多一条记录匹配），index（扫描全部索引），range（扫描部分索引）
        extra字段:  
         extra中出现以下2项意味着MYSQL根本不能使用索引,效率会受到重大影响,需要优化:  
         Using filesort--表示MYSQL会对结果使用一个外部索引排序,而不是使用本表的索引,可能在内存或者磁盘上进行排序.MYSQL中无法利用索引完成的排序操作称为"文件排序".  
@@ -609,6 +610,10 @@
             给zset中添加元素 : zadd myset 3 abc  (添加时指定元素对应的分数)  
             查看zset中数据 : zrangebyscore myzset 0 10  (从左往右取出第0位到第10位)   
            用Sorted Set来做带权重的队列,比如普通消息的score为1 , 重要消息的score为2 , 工作线程也可按工作的大小获取消息,让重要的任务优先执行.   
+           常用场景:
+               排行榜：美团要做一个销量排行榜,就可以使用店家的订单做score,这个查询出来的结果就是有序的
+               权重队列：score作为优先级,这样取出来的数据权重都是最大优先执行的
+               延时任务：score作为任务启动执行时间,取值时判断该值执行即可
    6. 除了以上5个常用的以外,还有用于计数的HyperLogLog , 用于支持存储地理位置信息的Geo.  
    
   

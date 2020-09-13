@@ -1,5 +1,12 @@
 package com.guoguo.javaAudition;
 
+import com.guoguo.javaAudition.job.Job;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
+
 /**
  * 描述:
  *
@@ -45,6 +52,15 @@ public class HelloWorld {
         System.out.println(c == d);
 
 
+        PriorityQueue<Job> objects = new PriorityQueue<>(5, new Comparator<Job>() {
+            @Override
+            public int compare(Job o1, Job o2) {
+                return o1.getId() - o2.getId();
+            }
+        });
+
+        double cc = 0.03 - 0.02;
+        System.out.println("cc = " + cc);
     }
 
 }
