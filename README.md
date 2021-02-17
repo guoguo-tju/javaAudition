@@ -262,7 +262,7 @@
    
    <h3 id="如何设计一个关系型数据库">如何设计一个关系型数据库</h3>   
    
-   ![设计一个数据库](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93.png "设计一个数据库")
+   ![设计一个数据库](./src/main/resources/picture/%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93.png "设计一个数据库")
      
    分为两部分:  
    		存储部分:将数据通过I/O持久化到磁盘上.I/O持久化是数据库速度的瓶颈,所以我们需要程序实例部分对存储部分进行管理和优化.  
@@ -292,14 +292,14 @@
        当数据删除,新增比较多的时候,现有的结构会发生打乱,二叉查找树会被打乱成为线性的.假定二叉树全都存在磁盘中,查找深度每增加1就要多进行一次IO操作,这样数据一多,数的深度就会很深,会增加IO次数,速度反而不如全表扫描来的快(全表扫描是每次读一页或者一块的数据进来),所以要让树变得矮一些,每阶层结点存储的数据多一些.要用到B-Tree了  
    
    * B-Tree(平衡多路查找树)见图.   
-   ![B-Tree结构图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/B-Tree%E7%BB%93%E6%9E%84%E5%9B%BE.png "B-Tree结构图")  
+   ![B-Tree结构图](./src/main/resources/picture/B-Tree%E7%BB%93%E6%9E%84%E5%9B%BE.png "B-Tree结构图")  
    
         每个节点包括:关键字(索引字段)+每个子节点的指针.  
         每个结点有几个孩子就是几阶B树,比如三阶B树.除根节点和叶子节点(没有子节点的节点)以外,其他每个节点至少有ceil(m/2)个孩子.所有叶子节点都位于同一层.  
         当数据删除,新增比较多的时候,B树通过它的规定来保持树的特征.使得查询复杂度保持在O(logn).  
    
    * B+-Tree(Mysql中用)见图    
-   ![B+-Tree结构图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/B%2B-Tree%E7%BB%93%E6%9E%84%E5%9B%BE.png "B+-Tree结构图")
+   ![B+-Tree结构图](./src/main/resources/picture/B%2B-Tree%E7%BB%93%E6%9E%84%E5%9B%BE.png "B+-Tree结构图")
    
         B+是B的变体,基本定义与B树相同,除了:  
         非叶子节点的子树指针与关键字个数相同:可以存更多关键字,树更矮  
@@ -314,7 +314,7 @@
    
    
    * Hash索引: 见图  
-   ![hash索引](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/hash%E7%B4%A2%E5%BC%95.png "hash索引")
+   ![hash索引](./src/main/resources/picture/hash%E7%B4%A2%E5%BC%95.png "hash索引")
    
    所查数据根据hash计算只需一次便可定位到查找数据所在的bucket,之后将bucket中的entry(链表)全部加载进入内存,顺着链表指针找到所需的数据.理论上比B+Tree查询效率高.   
 
@@ -330,14 +330,14 @@
        
    <h3 id="密集索引和稀疏索引的区别">密集索引和稀疏索引的区别</h3>  
      
-   ![密集索引和稀疏索引](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%AF%86%E9%9B%86%E7%B4%A2%E5%BC%95%E5%92%8C%E7%A8%80%E7%96%8F%E7%B4%A2%E5%BC%95.png "密集索引和稀疏索引")
+   ![密集索引和稀疏索引](./src/main/resources/picture/%E5%AF%86%E9%9B%86%E7%B4%A2%E5%BC%95%E5%92%8C%E7%A8%80%E7%96%8F%E7%B4%A2%E5%BC%95.png "密集索引和稀疏索引")
     
    * 密集索引: 每个搜索码都对应一个索引值.叶子结点中不仅保存键值还保存了该列的数据.一个表只能创建一个密集索引.  
    * 稀疏索引:   
        只为索引码的某些值建立索引项.叶子结点只保存了键值以及该行数据的地址或者主键信息.找到叶子结点以后仍要通过地址或者主键信息来寻找数据.
    
    * 对Mysql分析:  见图  
-   ![InnoDB与MyISAM](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/InnoDB%E4%B8%8EMyISAM.png "InnoDB与MyISAM")
+   ![InnoDB与MyISAM](./src/main/resources/picture/InnoDB%E4%B8%8EMyISAM.png "InnoDB与MyISAM")
    
        * MyISAM: 表的所有类型的索引都用稀疏索引,索引与数据是分两个文件存储的.  
        * InnoDB: 表有且仅有一个密集索引,其他索引都是稀疏索引(辅助键索引),索引与数据是在一个文件存储的.  
@@ -822,18 +822,18 @@
        		  	* 对2^32取模,将哈希值空间组成虚拟的圆环.按顺时针组织,圆环的正上方为0,0点右侧的第一个点为1,0点左侧的第一个点为(2^32-1)
        		  	* 选用服务的ip或者主机名作为关键字,来进行hash,来确定每台服务器在hash环上的位置.将key采用与服务器相同的hash函数来计数hash,确定key在环上的位置,然后顺时针行走第一个遇到的节点即为目标存储服务器. (见图)
        		  	
-       		    ![用key计算在环上的位置.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%94%A8key%E8%AE%A1%E7%AE%97%E5%9C%A8%E7%8E%AF%E4%B8%8A%E7%9A%84%E4%BD%8D%E7%BD%AE.png "用key计算在环上的位置.png")
+       		    ![用key计算在环上的位置.png](./src/main/resources/picture/%E7%94%A8key%E8%AE%A1%E7%AE%97%E5%9C%A8%E7%8E%AF%E4%B8%8A%E7%9A%84%E4%BD%8D%E7%BD%AE.png "用key计算在环上的位置.png")
        		    
        		  	* 好处: 对服务器的增减只需重新定位一小段数据.比如C宕机,只有C那段数据会受影响,C段的数据会重新定位到D上. 新增服务器,同理.
    
        		*  哈希环的数据倾斜问题: (见图)    
        		  	* 在节点很少时会因为节点分布不均匀而造成大量数据集中缓存到某一台服务器上.    
        		  	
-                ![哈希环的数据倾斜问题.png.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%93%88%E5%B8%8C%E7%8E%AF%E7%9A%84%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "哈希环的数据倾斜问题.png.png")
+                ![哈希环的数据倾斜问题.png.png](./src/main/resources/picture/%E5%93%88%E5%B8%8C%E7%8E%AF%E7%9A%84%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "哈希环的数据倾斜问题.png.png")
                 
        		*  引入虚拟节点解决数据倾斜问题: (见图)  
        		
-       		    ![引入虚拟节点解决数据倾斜问题.png.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%BC%95%E5%85%A5%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%E8%A7%A3%E5%86%B3%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "引入虚拟节点解决数据倾斜问题.png.png")
+       		    ![引入虚拟节点解决数据倾斜问题.png.png](./src/main/resources/picture/%E5%BC%95%E5%85%A5%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%E8%A7%A3%E5%86%B3%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98.png "引入虚拟节点解决数据倾斜问题.png.png")
        		
        		    * 为每台服务器计算虚拟节点,均匀分布到环上,多了一步虚拟节点到实体节点的映射,数据定位算法不变.这样相对较少的数据节点也能实现数据的均匀分布.
        		  	* 实际应用中将虚拟节点设置为32.  
@@ -849,7 +849,7 @@
 
    <h3 id="Linux的体系结构">Linux的体系结构</h3>      
  
-   ![Linux的体系结构.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/Linux%E7%9A%84%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.png "Linux的体系结构.png")   
+   ![Linux的体系结构.png](./src/main/resources/picture/Linux%E7%9A%84%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.png "Linux的体系结构.png")   
    
    * 体系结构分为用户态和内核态:
 		* 内核: 本质是一段管理计算机硬件设备的程序.
@@ -945,7 +945,7 @@
 
    <h3 id="JVM如何加载class文件">JVM如何加载class文件</h3>   
 
-   ![JVM结构模型.png](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/JVM%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B.png.jpg)
+   ![JVM结构模型.png](./src/main/resources/picture/JVM%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B.png.jpg)
 
    - JVM 主要由一下四部分组成
      - Class Loader
@@ -984,7 +984,7 @@
 
    - 谈谈类加载器的双亲委派机制
 
-     ![类加载器的双亲委派机制](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6.jpg)
+     ![类加载器的双亲委派机制](./src/main/resources/picture/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6.jpg)
 
    - 为什么使用双亲委派机制去加载类
 
@@ -1017,7 +1017,7 @@
 
    <h3 id="Java的内存模型">Java的内存模型</h3>   
 
-   ​	![JVM内存模型](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/JVM%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.jpg)
+   ​	![JVM内存模型](./src/main/resources/picture/JVM%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.jpg)
 
    - 程序计数器 , 每个线程都有一个程序计数器 , 只对Java方法计数 . 
 
@@ -1172,7 +1172,7 @@
 
    s3 == s4 : 在堆中生成"aa"对象 , s3.intern()发现常量池中没有该字符串 , 将"aa"的副本放入常量池(注意此时字符串常量池与堆式独立的)中 , s3是堆中的"aa"对象的地址 , s4是常量池中的"aa"的地址 . 故 s3 != s4 ; 
 
-   ![intern-jdk6](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/intern-jdk6.jpg)
+   ![intern-jdk6](./src/main/resources/picture/intern-jdk6.jpg)
 
    在JDK6+下 :
 
@@ -1186,7 +1186,7 @@
 
    s3 == s4 : 在堆中生成"aa"对象 , 字符串常量池中没有"aa" , 将堆中"aa"对象的地址放入常量池中(注意此时常量池也放入堆中了) , s3 是"aa"在堆中的地址 , s4也是堆中的引用 , 故 s3 == s4 ;
 
-   ![intern-jdk7](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/intern-jdk7.jpg)
+   ![intern-jdk7](./src/main/resources/picture/intern-jdk7.jpg)
 
 
 <br>
@@ -1236,7 +1236,7 @@
 
      - 分为对象面和空闲面 , 对象在对象面上创建 , 当对象面的空间用完 , 就将存活的对象从对象面复制到空闲面 , 再将对象面的所有对象内存清除 . 每次都对整个半区进行整体的内存回收 , 无需考虑内存碎片 , 适用于对象存活率较低的场景 , 比如年轻代 . 
 
-       ![复制算法](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95.jpg)
+       ![复制算法](./src/main/resources/picture/%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95.jpg)
 
    - 标记- 整理算法 ( Compacting )  -- 适用于老年代
 
@@ -1254,13 +1254,13 @@
 
        年轻代 / 老年代 / 永久代
 
-     ![jdk6,7的堆内存划分](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jdk6%2C7%E7%9A%84%E5%A0%86%E5%86%85%E5%AD%98%E5%88%92%E5%88%86.jpg)
+     ![jdk6,7的堆内存划分](./src/main/resources/picture/jdk6%2C7%E7%9A%84%E5%A0%86%E5%86%85%E5%AD%98%E5%88%92%E5%88%86.jpg)
 
      - jdk8
 
        年轻代 / 年老代
 
-       ![jdk8堆内存的划分](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jdk8%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84%E5%88%92%E5%88%86.jpg)
+       ![jdk8堆内存的划分](./src/main/resources/picture/jdk8%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84%E5%88%92%E5%88%86.jpg)
 
    <h3 id="分代收集算法(Generational-Collector)">分代收集算法(Generational-Collector)</h3>  
 
@@ -1274,7 +1274,7 @@
 
          - 两个Survivor区 (一个from区 , 一个to区 , 不断变化的)
 
-           ![年轻代](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%B9%B4%E8%BD%BB%E4%BB%A3.jpg)
+           ![年轻代](./src/main/resources/picture/%E5%B9%B4%E8%BD%BB%E4%BB%A3.jpg)
 
        - 年轻代垃圾回收的过程
 
@@ -1340,7 +1340,7 @@
 
    - 垃圾收集器之间的联系
 
-     ![垃圾收集器之间的联系](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E8%81%94%E7%B3%BB.jpg)
+     ![垃圾收集器之间的联系](./src/main/resources/picture/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E8%81%94%E7%B3%BB.jpg)
 
    - 年轻代常见垃圾收集器
 
@@ -1386,7 +1386,7 @@
 
          6. 并发重置 : 重置CMS收集器的数据结构
 
-            ![CMS工作流程图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/CMS%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
+            ![CMS工作流程图](./src/main/resources/picture/CMS%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
 
        - 缺点 : 采用的标记-清除算法 , 会产生不连续的内存碎片 , 当要存储一个较大的对象时 , 会触发GC . 
 
@@ -1511,7 +1511,7 @@
 
    - 四种引用的比较
 
-   ![java中的四种引用](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/java%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8.jpg)
+   ![java中的四种引用](./src/main/resources/picture/java%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8.jpg)
 
    <h3 id="引用队列(ReferenceQueue)的作用">引用队列(ReferenceQueue)的作用</h3>  
 
@@ -1585,7 +1585,7 @@
 
   - channel . 每个消费者从RabbitMQ获取消息的时候，都是通过一个channel的概念来进行的 , 这个channel就是进行数据传输的一个管道 .  delivery tag仅仅在一个channel内部是唯一标识消息投递的。所以说，你ack一条消息的时候，必须是通过接受这条消息的同一个channel来进行。
 
-    ![channel](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_channel.png)
+    ![channel](./src/main/resources/picture/mq_channel.png)
 
   - 其实这里还有一个很重要的点，就是我们可以设置一个参数，然后就批量的发送ack消息给RabbitMQ，这样可以提升整体的性能和吞吐量。
 
@@ -1604,7 +1604,7 @@
 
   - **仓储服务处理失败时的消息重发** , 某个仓储服务实例处理某个消息失败了，此时会进入catch代码块 , 使用nack操作 , 通知RabbitMQ自己没处理成功消息，然后让RabbitMQ将这个消息再次投递给其他的仓储服务实例尝试去完成调度发货的任务。
 
-    ![try-catch代码](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_%E6%B6%88%E8%B4%B9%E8%80%85_try-catch%E4%BB%A3%E7%A0%81.png)
+    ![try-catch代码](./src/main/resources/picture/mq_%E6%B6%88%E8%B4%B9%E8%80%85_try-catch%E4%BB%A3%E7%A0%81.png)
 
     
 
@@ -1673,7 +1673,7 @@
 
     - 每一块内存区域设置的缓冲大小是512kb，系统接收到请求就写current缓冲区，但是current缓冲区总共就512kb的内存空间，因此一定会写满。current缓冲区写满之后，就会交换current缓冲区和ready缓冲区。交换过后，ready缓冲区承载了之前写满的512kb的数据。然后current缓冲区此时是空的，可以继续接着系统继续将新来的数据写入交换后的新的current缓冲区。
 
-      ![内存双缓冲机制](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_%E5%86%85%E5%AD%98%E5%8F%8C%E7%BC%93%E5%86%B2%E6%9C%BA%E5%88%B6.png)
+      ![内存双缓冲机制](./src/main/resources/picture/mq_%E5%86%85%E5%AD%98%E5%8F%8C%E7%BC%93%E5%86%B2%E6%9C%BA%E5%88%B6.png)
 
     - 此时，后台线程就可以将ready缓冲区中的数据通过Java NIO的API，直接高性能append方式的写入到本地磁盘文件里。当然，这里后台线程会有一整套完善的机制，比如说一个磁盘文件有固定大小，如果达到了一定大小，自动开启一个新的磁盘文件来写入数据。
 
@@ -1690,7 +1690,7 @@
     - 一旦你开启了confirm模式之后，每次消息投递也同样是有一个delivery tag的，也是起到唯一标识一次消息投递的作用。这样，MQ回传ack给生产端的时候，会带上这个delivery tag。你就知道具体对应着哪一次消息投递了，可以删除这条消息。
     - 如果RabbitMQ接收到一条消息之后，结果内部出错发现无法处理这条消息，那么他会回传一个nack消息给生产端。此时你可以选择重新再次投递这条消息到MQ去。或者另一种情况，如果某条消息很长时间都没给你回传ack/nack，那可能是极端意外情况发生了，数据也丢了，你也可以自己重新投递消息到MQ去。
 
-  ![confirm机制代码](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/mq_confirm%E6%9C%BA%E5%88%B6%E4%BB%A3%E7%A0%81.png)
+  ![confirm机制代码](./src/main/resources/picture/mq_confirm%E6%9C%BA%E5%88%B6%E4%BB%A3%E7%A0%81.png)
   
 
   - **confirm机制投递消息的高延迟性**
@@ -1721,7 +1721,7 @@
    
   <h3 id="Java的异常体系">Java的异常体系</h3> 
 
-   ![java的异常体系](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/java%E7%9A%84%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png)
+   ![java的异常体系](./src/main/resources/picture/java%E7%9A%84%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png)
 
    - RunTimeException : 不可预知的 , 程序应当自行避免 . ( 比如空指针 , 数组下标越界 )
    - 非RunTimeException(直接继承Exception , 而不是RunTimeException ) : 可预知的 , 从编译器校验的异常 , 即编译时异常. ( 比如IOException , SQLException , 编译器直接报错的 , 需要try-catch) 
@@ -1752,14 +1752,14 @@
 
   <h3 id="数据结构和算法考点">数据结构和算法考点</h3> 
 
-   ![数据结构考点](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%80%83%E7%82%B9.jpg)
+   ![数据结构考点](./src/main/resources/picture/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%80%83%E7%82%B9.jpg)
 
-   ![算法考点](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%AE%97%E6%B3%95%E8%80%83%E7%82%B9.jpg)
+   ![算法考点](./src/main/resources/picture/%E7%AE%97%E6%B3%95%E8%80%83%E7%82%B9.jpg)
 
 
   <h3 id="Java集合">Java集合</h3> 
   
-   - list和set考点![list和set常考考点](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/list%E5%92%8Cset%E5%B8%B8%E8%80%83%E8%80%83%E7%82%B9.jpg)
+   - list和set考点![list和set常考考点](./src/main/resources/picture/list%E5%92%8Cset%E5%B8%B8%E8%80%83%E8%80%83%E7%82%B9.jpg)
      - set本质是由Map实现的 , 把元素放入Map中的key , 而value给一个new Onject() . 
      - TreeSet中自然排序 ( 传入的对象实现了Comparable的接口) 的优先级低于客户化排序 (在new TreeSet时在构造方法中传入的Comparator类)
 
@@ -1843,7 +1843,7 @@
           允许单线程处理多个Channel . 单线程的轮循机制 , 通过高效定位就绪的channel来决定做什么 . 
           如果同时打开多个Channel , 每个Channel流量又很低 , 使用Selector就会很方便 (Channel需要在selector上注册).      
 
-        ![NIO中Selector,Channel,Buffer](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/NIO%E4%B8%ADSelector%2CChannel%2CBuffer.jpg)
+        ![NIO中Selector,Channel,Buffer](./src/main/resources/picture/NIO%E4%B8%ADSelector%2CChannel%2CBuffer.jpg)
 
    - AIO (Asynchronous IO) :  异步非阻塞IO 
 
@@ -1870,11 +1870,11 @@
     
       - 创建实例的时候不需要了解其中的细节 (蓝色框内是被隐藏掉的细节 , spring就像一个工厂一样 , 你需求什么它给你什么 )
     
-        ![ioc的优势](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ioc%E7%9A%84%E4%BC%98%E5%8A%BF.png)
+        ![ioc的优势](./src/main/resources/picture/ioc%E7%9A%84%E4%BC%98%E5%8A%BF.png)
     
    - ioc在启动时的过程
     
-      ![ioc在启动时](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ioc%E5%9C%A8%E5%90%AF%E5%8A%A8%E6%97%B6.png)
+      ![ioc在启动时](./src/main/resources/picture/ioc%E5%9C%A8%E5%90%AF%E5%8A%A8%E6%97%B6.png)
     
    - BeanDefiniton
     
@@ -2025,7 +2025,7 @@
 
      - Feign就会针对这台机器，构造并发起请求。
 
-       ![ribbon,Feign,Eureka](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ribbon%2CFeign%2CEureka.jpg)
+       ![ribbon,Feign,Eureka](./src/main/resources/picture/ribbon%2CFeign%2CEureka.jpg)
 
    - **Hystrix**
 
@@ -2034,7 +2034,7 @@
      - **现在很不幸，积分服务挂了，会咋样？**当然会导致订单服务里的那个用来调用积分服务的线程都卡死不能工作了！但是由于订单服务调用库存服务、仓储服务的这两个线程池都是正常工作的，所以这两个服务不会受到任何影响。只不过调用积分服务的时候，每次都会报错。**但是如果积分服务都挂了，每次调用都要去卡住几秒钟干啥呢？****有意义吗？当然没有！**所以我们直接对积分服务熔断不就得了，比如在5分钟内请求积分服务直接就返回了，不要去走网络请求卡住几秒钟，这个过程，就是所谓的熔断！
      - 咱们再来个降级：每次调用积分服务，你就在数据库里记录一条消息，说给某某用户增加了多少积分，因为积分服务挂了，导致没增加成功！这样等积分服务恢复了，你可以根据这些记录手工加一下积分。这个过程，就是所谓的降级。
 
-   ![hystrix](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/hystrix.jpg)
+   ![hystrix](./src/main/resources/picture/hystrix.jpg)
 
    - **Zuul**
      - 一般微服务架构中都必然会设计一个网关在里面，像android、ios、pc前端、微信小程序、H5等等，不用去关心后端有几百个服务，就知道有一个网关，所有请求都往网关走，网关会根据请求中的一些特征，将请求转发给后端的各个服务。而且有一个网关之后，还有很多好处，比如可以做统一的降级、限流、认证授权、安全，等等。
@@ -2198,7 +2198,7 @@
 
 - **可靠消息最终一致性方案的核心流程**
 
-  ![可靠消息最终一致性方案](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%8F%AF%E9%9D%A0%E6%B6%88%E6%81%AF%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88.png)
+  ![可靠消息最终一致性方案](./src/main/resources/picture/%E5%8F%AF%E9%9D%A0%E6%B6%88%E6%81%AF%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88.png)
 
   - **上游服务投递消息**
 
@@ -2235,7 +2235,7 @@
 
   - 这套方案里保障高可用性最大的一个依赖点，就是**MQ的高可用性**。MQ一旦完全不可用，就会导致业务系统的各个服务之间无法通过MQ来投递消息，导致业务流程中断。这种情况，就需要针对这套分布式事务方案实现一套高可用保障机制。
 
-    ![基于KV存储的队列支持的高可用降级方案](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%9F%BA%E4%BA%8EKV%E5%AD%98%E5%82%A8%E7%9A%84%E9%98%9F%E5%88%97%E6%94%AF%E6%8C%81%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%99%8D%E7%BA%A7%E6%96%B9%E6%A1%88.jpg)
+    ![基于KV存储的队列支持的高可用降级方案](./src/main/resources/picture/%E5%9F%BA%E4%BA%8EKV%E5%AD%98%E5%82%A8%E7%9A%84%E9%98%9F%E5%88%97%E6%94%AF%E6%8C%81%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%99%8D%E7%BA%A7%E6%96%B9%E6%A1%88.jpg)
 
   - 自行封装MQ客户端组件与故障感知
 
@@ -2280,13 +2280,13 @@
 
 - 通过**Redisson**框架实现
 
-  ![Redisson原理流程图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/Redisson%E5%8E%9F%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
+  ![Redisson原理流程图](./src/main/resources/picture/Redisson%E5%8E%9F%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
 
   - **加锁机制**
 
     - 如果该客户端面对的是一个redis cluster集群，他首先会根据hash节点选择一台机器。紧接着，就会发送一段lua脚本到redis上，那段lua脚本如下所示：
 
-      ![lua脚本](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/lua%E8%84%9A%E6%9C%AC.jpg)
+      ![lua脚本](./src/main/resources/picture/lua%E8%84%9A%E6%9C%AC.jpg)
 
     - 为啥要用lua脚本呢？因为一大坨复杂的业务逻辑，可以通过封装在lua脚本中发送给redis，保证这段复杂业务逻辑执行的**原子性**。
 
@@ -2361,7 +2361,7 @@
 
      - 采用类似ConcurrentHashMap的思想 , **分段加锁** .
 
-       ![高并发超卖的分段加锁](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E9%AB%98%E5%B9%B6%E5%8F%91%E8%B6%85%E5%8D%96%E7%9A%84%E5%88%86%E6%AE%B5%E5%8A%A0%E9%94%81.png)
+       ![高并发超卖的分段加锁](./src/main/resources/picture/%E9%AB%98%E5%B9%B6%E5%8F%91%E8%B6%85%E5%8D%96%E7%9A%84%E5%88%86%E6%AE%B5%E5%8A%A0%E9%94%81.png)
 
      - 就是把你的1000件库存给他拆开，每个库存段是50件库存，比如stock_01对应50件库存，stock_02对应50件库存。接着，每秒1000个请求过来了，好！此时其实可以是自己写一个简单的随机算法，每个请求都是随机在20个分段库存里，选择一个进行加锁。这样就好了，同时可以有最多20个下单请求一起执行，每个下单请求锁了一个库存分段，然后在业务逻辑里面，就对数据库或者是Redis中的那个分段库存进行操作即可 . 这样一下子并发性能可以增长几十倍。
 
@@ -2474,7 +2474,7 @@
 
   <h3 id="线程之间状态的转换">线程之间状态的转换</h3>   
 
-   ![线程状态之间的转换](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2.png)   
+   ![线程状态之间的转换](./src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2.png)   
          
   <h3 id="线程安全问题">线程安全问题</h3>         
 
@@ -2498,7 +2498,7 @@
 
          - 对象头
 
-           ![对象头结构](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E5%AF%B9%E8%B1%A1%E5%A4%B4%E7%BB%93%E6%9E%84.png)
+           ![对象头结构](./src/main/resources/picture/%E5%AF%B9%E8%B1%A1%E5%A4%B4%E7%BB%93%E6%9E%84.png)
 
          - 实例数据
 
@@ -2564,7 +2564,7 @@
 
        三种锁状态的区别:
 
-       ![三种锁状态的区别](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E4%B8%89%E7%A7%8D%E9%94%81%E7%8A%B6%E6%80%81%E7%9A%84%E5%8C%BA%E5%88%AB.jpg)
+       ![三种锁状态的区别](./src/main/resources/picture/%E4%B8%89%E7%A7%8D%E9%94%81%E7%8A%B6%E6%80%81%E7%9A%84%E5%8C%BA%E5%88%AB.jpg)
 
   <h3 id="ReentrantLock与synchronized的区别">ReentrantLock与synchronized的区别</h3>       
 
@@ -2614,7 +2614,7 @@
 
      - ScheduledExecutorService : 支持Future和定期执行任务
 
-       ![Executor的框架](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/Executor%E7%9A%84%E6%A1%86%E6%9E%B6.png)
+       ![Executor的框架](./src/main/resources/picture/Executor%E7%9A%84%E6%A1%86%E6%9E%B6.png)
 
    - ThreadPoolExecutor的构造函数
 
@@ -2632,7 +2632,7 @@
 
    - ThreadPoolExecutor内部的处理流程
 
-     ![ThreadPoolExecutor流程](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/ThreadPoolExecutor%E6%B5%81%E7%A8%8B.png)
+     ![ThreadPoolExecutor流程](./src/main/resources/picture/ThreadPoolExecutor%E6%B5%81%E7%A8%8B.png)
 
      - 在刚刚创建ThreadPoolExecutor的时候，核心线程并不会立即启动，而是要等到有任务提交时才会启动，除非调用了prestartCoreThread/prestartAllCoreThreads事先启动核心线程。
      - 等待队列WorkQueue先来接收新的任务 , 将任务排队提交给内部的线程池(静态内部类Worker继承了AQS)
@@ -2650,7 +2650,7 @@
      - TIDYING : 所有的任务都已终止 . 
      - TERMINATED : terminated()方法执行完后进入该状态 . 
    
-     ![线程池状态转换图](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.png)
+     ![线程池状态转换图](./src/main/resources/picture/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.png)
    
    - 线程池的大小如何选定
    
@@ -2660,7 +2660,7 @@
      
   <h3 id="一道JVM类加载机制的面试题">一道JVM类加载机制的面试题</h3>          
 
-![jvm加载顺序代码](https://raw.githubusercontent.com/guoguo-tju/javaAudition/master/src/main/resources/picture/jvm%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F%E4%BB%A3%E7%A0%81.jpg)
+![jvm加载顺序代码](./src/main/resources/picture/jvm%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F%E4%BB%A3%E7%A0%81.jpg)
 
 - 请问这段程序的输出是什么
 

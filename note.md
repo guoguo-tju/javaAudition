@@ -47,7 +47,7 @@
 
       忘了补充一点，事务尽可能的小，就是说都是小事务提交（不要把什么写日志，调接口也包在开启事务逻辑里面），还有乐观锁，悲观锁，间隙锁（特别是间隙锁，MySQL在RR隔离级别下产生的间隙锁要特别小心），快照读，当前读，mvcc这些一定要清楚认知和使用恰当，不然事务隔离级别下的锁竞争，平峰时快速普通SQL不光会跑到十几甚至几十秒，而且会造成MySQL线程数跑满，或者直接挂了
 
-      ![设计一个高并发系统](C:\Users\guozh\Desktop\java\石杉\设计一个高并发系统.jpg)
+      ![设计一个高并发系统](./src/main/resources/shishan/设计一个高并发系统.jpg)
 
       
 
@@ -98,7 +98,7 @@
       4. 通信协议: Protocol 
       5. 动态代理: Proxy
 
-      ![Dubbo底层调用原理](C:\Users\guozh\Desktop\java\石杉\Dubbo底层调用原理.jpg)
+      ![Dubbo底层调用原理](./src/main/resources/shishan/Dubbo底层调用原理.jpg)
 
    3. dubbo集群容错策略
 
@@ -139,7 +139,7 @@
 
          实例代码: https://gitee.com/guoguotju/Java-Interview-Advanced/blob/master/docs/distributed-system/dubbo-spi.md
 
-         ![dubbo的spi机制](C:\Users\guozh\Desktop\java\石杉\dubbo的spi机制.png)
+         ![dubbo的spi机制](./src/main/resources/shishan/dubbo的spi机制.png)
 
    5. Dubbo的服务治理,服务降级 , 失败重试,超时机制
 
@@ -178,7 +178,7 @@
 
          1. 同提供者类似 ,也是对一个提供者建立一个SocketChannel连接, 一个Processor线程通过Selector轮询多个SocketChannel的网络事件 , 把响应值返回给消费者.
 
-         ![网络通信netty框架原理](C:\Users\guozh\Desktop\java\石杉\网络通信netty框架原理.jpg)
+         ![网络通信netty框架原理](./src/main/resources/shishan/网络通信netty框架原理.jpg)
 
 4. 如何设计一个RPC框架
 
@@ -210,7 +210,7 @@
       2. 心跳与故障
          1. 服务注册机器会每30s发送一次心跳 , 服务注册表会记录心跳 , 后台有个心跳线程会定时检查,当发现一定时间内某个机器没有心跳 , 任务机器挂了 , 将该机器剔除服务注册表 , 同事会发指令ReadWrite缓存 , ReadWrite缓存会清空自己 , 然后定时同步线程也会清空ReadOnly缓存 . 当下次的服务发现时会去服务注册表拉取最新的数据更新到两个缓存中.
 
-      ![Eureka注册中心原理](C:\Users\guozh\Desktop\java\石杉\Eureka注册中心原理.jpg)
+      ![Eureka注册中心原理](./src/main/resources/shishan/Eureka注册中心原理.jpg)
 
    2. Ribbon
 
@@ -236,7 +236,7 @@
 
       1. master-follower，通过只对主节点进行写，然后由主节点同步到从节点后，主动向节点推送到各个服务节点。时效性较高 .  服务消费者可以去加监听服务列表, ZK会主动通知给消费者服务列表的变动.当有机器新增或者下线, ZK的leader节点先感知到然后同步给Follower节点,Follower节点主动通知服务消费者.
 
-         ![ZooKeeper服务注册与发现原理](C:\Users\guozh\Desktop\java\石杉\ZooKeeper服务注册与发现原理.jpg)
+         ![ZooKeeper服务注册与发现原理](./src/main/resources/shishan/ZooKeeper服务注册与发现原理.jpg)
 
    3. 一致性保障 CP or AP
 
@@ -297,7 +297,7 @@
       3. 通过主从节点都写成功了再返回ack(一致性).
       4. 服务消费者 通过代理层去指定的节点拉取部分注册信息，不用每次都拉取集群的全集。
 
-      ![自研注册中心架构](C:\Users\guozh\Desktop\java\石杉\自研注册中心架构.jpg)
+      ![自研注册中心架构](./src/main/resources/shishan/自研注册中心架构.jpg)
 
    7. 其他注册中心比较
 
@@ -334,7 +334,7 @@
 3. 动态路由的实现
 
    1. 动态路由实现: 可以使用第三方组件保存路由关系，然后在网关里面通过定时任务去定时刷新组件中保存的路由信息。 因此就可以基于mqsql去做路由关系的保存，然后通过后台管理系统去操作db，再由网关去定时查询db更新路由表，实现动态路由效果。 
-   2. 代码实现: C:\Users\guozh\Desktop\java\石杉\代码2\zuul-gateway\src\main\java\com\zhss\demo\zuul\gateway 中
+   2. 代码实现: ./src/main/resources/shishan/代码2\zuul-gateway\src\main\java\com\zhss\demo\zuul\gateway 中
 
 4. 网关抗住每秒10w的高并发访问 ,如何优化
 
@@ -350,11 +350,11 @@
 5. 如何基于网关实现灰度发布
 
    1. 开发流程： 首先自己建一张表，存入具体uri以及是否灰度发布的一些信息，然后搞一张映射表。 启动个线程每个多少时间就去刷新数据写到concurrenthashmap里面。 接着搞一个filter继承ZuulFilter，重写里面几个函数，其中shouldFilter根据返回值去判断执不执行run。 因此再should里面遍历map去看这次请求是否有开启灰度发布，如果有就执行run里面的逻辑，就自定义一些分发逻辑，这里用的时通过version去判断和分发。 2、灰度发布流程 首先通过后台系统更改灰度发布标识，后台线程更新了map后，就会去执行根据version分发的策略，将少部分流量分发到new上，然后监控和对应的后台，如果没问题，就更改为current，全线上线，最后将灰度发布表示改回来。
-   2. 代码实现:  C:\Users\guozh\Desktop\java\石杉\代码 3\zuul-gateway\src\main\java\com\zhss\demo\zuul\gateway 里面 GrayRelease*的三个文件.
+   2. 代码实现:  ./src/main/resources/shishan/代码 3\zuul-gateway\src\main\java\com\zhss\demo\zuul\gateway 里面 GrayRelease*的三个文件.
 
 6. 公司的网关mbgw的架构图
 
-   ![公司网关架构图](C:\Users\guozh\Desktop\java\石杉\公司网关架构图.jpg)
+   ![公司网关架构图](./src/main/resources/shishan/公司网关架构图.jpg)
 
 
 
@@ -459,7 +459,7 @@
 
             5. 如果B系统执行的事务失败了怎么办? B系统自身需要具备一套失败重试的机制 , 进行失败重试 ; 如果没有的话B系统可以通过MQ的相关机制让MQ重新发送消息 ; 也可以通过ZK , A系统发完消息之后一直监听ZK上的一个值 , B如果失败了 , 通知ZK , 然后ZK反过来通知A系统 , A系统把confirm消息再发一遍. 在这里B系统一定要保证自己的幂等性.
 
-               ![分布式事务-可靠消息最终一致性方案](C:\Users\guozh\Desktop\java\石杉\分布式事务-可靠消息最终一致性方案.jpg)
+               ![分布式事务-可靠消息最终一致性方案](./src/main/resources/shishan/分布式事务-可靠消息最终一致性方案.jpg)
 
          3. 订单服务的可靠消息最终一致性方案(上述过程细化):
 
@@ -473,7 +473,7 @@
             6. 在half message等待期间,一直没有commit/rolback的消息 , MQ会有后台线程来轮询,走回调去查询状态.
             7. 消费者收到消息,消费完成后回复MQ一个ack , 如果消费失败了 , MQ会重新投递或者换一个机器投递消息.
 
-         ![分布式事务-订单系统可靠消息最终一致性原理](C:\Users\guozh\Desktop\java\石杉\分布式事务-订单系统可靠消息最终一致性原理.jpg)
+         ![分布式事务-订单系统可靠消息最终一致性原理](./src/main/resources/shishan/分布式事务-订单系统可靠消息最终一致性原理.jpg)
 
          
 
@@ -502,7 +502,7 @@
                2. XID通过链路向下传播 , RM将本地的事务注册到TC中表示为XID的全局事务中的一个分支事务.
                3. 当执行成功 , 后由TM向TC请求标识为XID的全局事务的提交. 当有一个服务失败时,TM会通过返回值感知到,然后告诉TC将XID的全局事务回滚掉. 由TC来驱动所有的分支事务进行提交/回滚.
 
-            ![seata中tcc处理流程图](C:\Users\guozh\Desktop\java\石杉\seata中tcc处理流程图.png)
+            ![seata中tcc处理流程图](./src/main/resources/shishan/seata中tcc处理流程图.png)
 
          5. TCC事务方案的性能瓶颈在哪里 , 能支撑高并发交易场景么
 
@@ -559,7 +559,7 @@
 
          3. 原理流程图
 
-            ![分布式锁-基于Redisson实现原理图](C:\Users\guozh\Desktop\java\石杉\分布式锁-基于Redisson实现原理图.jpg)
+            ![分布式锁-基于Redisson实现原理图](./src/main/resources/shishan/分布式锁-基于Redisson实现原理图.jpg)
 
             1. redisson根据hash节点选择一台机器, 发送一段lua脚本到redis上, 用lua脚本是将一堆逻辑封装在lua脚本中 , 保证这段逻辑的原子性. 
 
@@ -615,7 +615,7 @@
 
                这个其实是 zookeeper 很经典的一个用法，简单来说，就好比，你 A 系统发送个请求到 mq，然后 B 系统消息消费之后处理了。那 A 系统如何知道 B 系统的处理结果？用 zookeeper 就可以实现分布式系统之间的协调工作。A 系统发送请求之后可以在 zookeeper 上**对某个节点的值注册个监听器**，一旦 B 系统处理完了就修改 zookeeper 那个节点的值，A 系统立马就可以收到通知，完美解决。
 
-               ![zk的分布式协调实例图](C:\Users\guozh\Desktop\java\石杉\zk的分布式协调实例图.png)
+               ![zk的分布式协调实例图](./src/main/resources/shishan/zk的分布式协调实例图.png)
 
             2. 分布式锁
 
@@ -627,7 +627,7 @@
 
                4. 一旦临时节点被删除 , zk就会去通知监听节点A的系统B来获取锁.
 
-                  ![分布式锁-基于zookpeer来实现](C:\Users\guozh\Desktop\java\石杉\分布式锁-基于zookpeer来实现.jpg)
+                  ![分布式锁-基于zookpeer来实现](./src/main/resources/shishan/分布式锁-基于zookpeer来实现.jpg)
 
                5. demo代码 : https://gitee.com/shishan100/Java-Interview-Advanced/blob/master/docs/distributed-system/distributed-lock-redis-vs-zookeeper.md
 
@@ -643,7 +643,7 @@
 
                   4. 客户端A想释放锁 , 将节点中的加锁次数减一 , 当加锁次数为0时, 就释放锁 , 删除临时节点A , 客户端B会收到通知上一个节点被删除 , 此时回来再次尝试加锁 , 加锁成功.
 
-                     ![分布式锁-基于zookpeer的curator框架来实现](C:\Users\guozh\Desktop\java\石杉\分布式锁-基于zookpeer的curator框架来实现.jpg)
+                     ![分布式锁-基于zookpeer的curator框架来实现](./src/main/resources/shishan/分布式锁-基于zookpeer的curator框架来实现.jpg)
 
                8. zk分布式锁的羊群效应如何解决
 
@@ -662,7 +662,7 @@
 
                这个应该是很常见的，比如 hadoop、hdfs、yarn 等很多大数据系统，都选择基于 zookeeper 来开发 HA 高可用机制，就是一个**重要进程一般会做主备**两个，主进程挂了立马通过 zookeeper 感知到切换到备用进程。
 
-            ![zk的高可用场景](C:\Users\guozh\Desktop\java\石杉\zk的高可用场景.png)
+            ![zk的高可用场景](./src/main/resources/shishan/zk的高可用场景.png)
 
       6. redis分布式锁和zk分布式锁对比
 
@@ -755,7 +755,7 @@
 
             1. 把一个表的数据给弄到多个库的多个表里去，但是每个库的表结构都一样，只不过每个库表放的数据是不同的，所有库表的数据加起来就是全部数据。水平拆分的意义，就是将数据均匀放更多的库里，然后用多个库来扛更高的并发，还有就是用多个库的存储容量来进行扩容。
 
-               ![数据库的水平拆分](C:\Users\guozh\Desktop\java\石杉\数据库的水平拆分.png)
+               ![数据库的水平拆分](./src/main/resources/shishan/数据库的水平拆分.png)
 
          3. 表层面的拆分:
 
@@ -784,7 +784,7 @@
 
             3. 导完一轮之后 , 程序自动做一轮校验 对比数据 , 如果有不一样的 , 就针对不一样的从老库再次读出来然后写 , 反复循环 , 直到两个库每个表的数据都完全一直为止.
 
-               ![数据库的双写迁移方案](C:\Users\guozh\Desktop\java\石杉\数据库的双写迁移方案.png)
+               ![数据库的双写迁移方案](./src/main/resources/shishan/数据库的双写迁移方案.png)
 
       5. 如何设计可动态扩容的分库分表方案
 
@@ -905,7 +905,7 @@
                relay 中继日志中。接着从库中有一个 SQL 线程会从中继日志读取 binlog，然后执行 binlog 
                日志中的内容，也就是在自己本地再次执行一遍 SQL，这样就可以保证自己跟主库的数据是一样的。
 
-               ![mysql主从复制原理](C:\Users\guozh\Desktop\java\石杉\mysql主从复制原理.png)
+               ![mysql主从复制原理](./src/main/resources/shishan/mysql主从复制原理.png)
 
          3. 主从复制数据丢失问题: 
 
@@ -976,7 +976,7 @@
 
             虽然没有直接返回 html 页面那么快，但是因为数据在本地缓存，所以也很快，其实耗费的也就是动态渲染一个 html 页面的性能。如果 html模板发生了变更，不需要将所有的页面重新静态化，也不需要发送请求，没有网络请求的开销，直接将数据渲染进最新的 html 页面模板后响应即可。
 
-            ![大型电商网站详情页架构](C:\Users\guozh\Desktop\java\石杉\大型电商网站详情页架构.png)
+            ![大型电商网站详情页架构](./src/main/resources/shishan/大型电商网站详情页架构.png)
 
          2. 如果系统访问量很高，Nginx 本地缓存过期失效了，redis 中的缓存也被 LRU  算法给清理掉了，那么会有较高的访问量，从缓存服务调用商品服务。但如果此时商品服务的接口发生故障，调用出现了延时，缓存服务全部的线程都被这个调用商品服务接口给耗尽了，每个线程去调用商品服务接口的时候，都会卡住很长时间，后面大量的请求过来都会卡在那儿，此时缓存服务没有足够的线程去调用其它一些服务的接口，从而导致整个大量的商品详情页无法正常显示。
 
@@ -1107,7 +1107,7 @@
                - run() 或者 construct() 抛出异常。
             2. 一般在降级机制中，都建议给出一些默认的返回值，比如静态的一些代码逻辑，或者从内存中的缓存中提取一些数据，在这里尽量不要再进行网络请求了。
 
-            ![Hystrix的8个执行步骤](C:\Users\guozh\Desktop\java\石杉\Hystrix的8个执行步骤.jpg)
+            ![Hystrix的8个执行步骤](./src/main/resources/shishan/Hystrix的8个执行步骤.jpg)
 
       6. request cache缓存技术
 
@@ -1276,7 +1276,7 @@
 
             3. 如果获取锁的线程执行wait，就会将计数器count递减为0，同时owner设置为null，然后自己进入waitset中等待唤醒，别人获取了锁执行notify的时候就会唤醒waitset中的线程进入entryList尝试竞争获取锁.
 
-               ![synchronized的底层原理](C:\Users\guozh\Desktop\java\石杉\synchronized的底层原理.jpg)
+               ![synchronized的底层原理](./src/main/resources/shishan/synchronized的底层原理.jpg)
 
          2. 保证可见性
 
@@ -1339,7 +1339,7 @@
 
       1. Abstract Queue Synchronizer，抽象队列同步器 . JUC包下的ReentrantLock , Semaphore等都是基于AQS做的.
 
-         ![AQS原理图](C:\Users\guozh\Desktop\java\石杉\AQS原理图.png)
+         ![AQS原理图](./src/main/resources/shishan/AQS原理图.png)
 
       2. 过程: 1、线程1和线程2同时对state变量CAS。2、线程1成功，更新state值为1，然后加锁。3、线程2CAS失败进去等待队列。4、线程1执行完锁住的代码块逻辑后释放锁。5、线程2被唤醒，执行CAS成功，然后加锁，执行锁住的代码块后释放锁。6.如果设置是公平锁 , 线程池3会直接进入等待队列排队, 不会去同线程2争抢.
 
@@ -1387,7 +1387,7 @@
 
       1. java内存模型 :  是对计算机的一个抽象，将整个计算过程分成了6步(read、load、use、assign、store、write)去执行。因为每个线程都对应一个工作内存，所以导致主存中的数据值可能并不是最新的，因此多线程情况下，data++的这个操作就会被覆盖掉。 为什么要有工作内存的？它带来了内存不可见性与伪共享这些问题。是因为CPU的速度远高于内存的读写速度，因此为了充分利用CPU资源，设计了对应的缓存，还有一些其他的加载机制。 避免内存不可见用volatie就行，但是volatile的语义并不能保证data++能达到预期效果，因为它没办法保证这个执行的原子性。
 
-         ![java内存模型](C:\Users\guozh\Desktop\java\石杉\java内存模型.png)
+         ![java内存模型](./src/main/resources/shishan/java内存模型.png)
 
       2. java内存模型的原子性 , 可见性 , 有序性
 
@@ -1417,7 +1417,7 @@
 
                   volatile变量在读操作之前加Load屏障 , 那么在其他处理器在读时候, 会进行refresh操作，就会去总线嗅探该变量的更改，就会到更改了该变量的高速缓存或者主存中去加载最新的变量值，从而保证用来计算的值是最新的.
 
-                  ![java内存模型-volatile可见性底层原理](C:\Users\guozh\Desktop\java\石杉\java内存模型-volatile可见性底层原理.jpg)
+                  ![java内存模型-volatile可见性底层原理](./src/main/resources/shishan/java内存模型-volatile可见性底层原理.jpg)
 
          3. 开源代码中使用:
 
@@ -1450,7 +1450,7 @@
 
                   创建新对象一行语句，可以大致上分为：1、内存分配，2、执行构造函数(比较耗时)，3、赋值引用。在JIT之后可能就顺序就变成了132，可能导致NPE，因此在有一种单例模式double check的时候还需要volatile来防止指令重排导致空指针异常.
 
-               ![单例模式懒汉式代码](C:\Users\guozh\Desktop\java\石杉\单例模式懒汉式代码.jpg)
+               ![单例模式懒汉式代码](./src/main/resources/shishan/单例模式懒汉式代码.jpg)
 
                3. 处理器指令重排
                   1. 处理器为了提升性能会出现两种重排序情况： 1、指令乱序：指令可能会按照谁先就绪就先执行谁，然后放入重排序处理器，重新整理顺序后再放入高速缓存。 2、猜测执行：可能先执行判断体内的逻辑，在判断条件生效后再采纳原先的计算结果。
@@ -1492,7 +1492,7 @@
 
             1. 1、高速缓存的底层数据结构是一个拉链散列表，也就是多个bucket。 2、每个bucket挂了很多的cache entry，由tag（对应主存中的地址），cache line(缓存数据)，flag（缓存行状态）组成。 3、在处理器对高速缓存进行读写的时候，会通过变量名执行一个内存地址解码的操作，解码出三个东西：index（哪个bucket）、tag（定位到bucket中具体的一个cacke entry）、offset（找到在cache entry中cache line的相对位置） 4、如果处理器从高速缓存中读不到对应的数据，就会去主存或者其他处理器的高速缓存中读取放到高速缓存中。 5、高速缓存是分层的，L1、L2、L3越靠前的读写速度越快。
 
-               ![高速缓存的结构-拉链散列表](C:\Users\guozh\Desktop\java\石杉\高速缓存的结构-拉链散列表.jpg)
+               ![高速缓存的结构-拉链散列表](./src/main/resources/shishan/高速缓存的结构-拉链散列表.jpg)
 
          2. MESI协议(缓存一致性协议)的实现原理
 
@@ -1518,7 +1518,7 @@
 
                2. 无效队列：同样是为了提高处理器的利用率，将收到的失效请求先放进一个无效队列，收到后就直接返回ack，最后自己慢慢消费无效队列的请求去将高速缓存中的数据失效掉。
 
-                  ![写缓冲器和无效队列优化MESI性能](C:\Users\guozh\Desktop\java\石杉\写缓冲器和无效队列优化MESI性能.jpg)
+                  ![写缓冲器和无效队列优化MESI性能](./src/main/resources/shishan/写缓冲器和无效队列优化MESI性能.jpg)
 
                3. 引入写缓存器和无效队列带来的有序性和可见性问题
 
@@ -1597,7 +1597,7 @@
                   4. B创建完成后,A也会依赖注入成功,创建完成.
                   5. 参考processon的流程图.
 
-               ![Spring IOC解决循环依赖原理图](C:\Users\guozh\Desktop\java\石杉\Spring IOC解决循环依赖原理图.jpg)
+               ![Spring IOC解决循环依赖原理图](./src/main/resources/shishan/Spring IOC解决循环依赖原理图.jpg)
 
             3. 工作中，经常会遇到与其它团队的合作，也会遇到同时需要对方的新接口支持，例如在 RPC 中遇到循环调用，那我建议还是换一种方案，例如通过消息解耦，避免循环调用，实在没办法要循环调用，要记得在方法中加上退出条件，避免无限循环
 
@@ -1731,7 +1731,7 @@
 
             1. DNS地址是啥呢？Domain Name System。因为我们一般定位是通过ip地址+mac地址+端口号来定位一个通信目标的，但是如果在浏览器上输入一个www.baidu.com，咋整？这个时候是先把www.baidu.com发给DNS服务器，然后DNS服务器告诉你www.baidu.com对应的ip地址的。
 
-            ![TCP_IP四层网络模型](C:\Users\guozh\Desktop\java\石杉\TCP_IP四层网络模型.jpg)
+            ![TCP_IP四层网络模型](./src/main/resources/shishan/TCP_IP四层网络模型.jpg)
 
          7. 总结:
 
@@ -1828,7 +1828,7 @@
          1. 每一个客户端请求来都会建立一个对应的channel同时注册到selector , selector(多路复用器,一个线程) 会不断轮询注册的channel , 每一个获取一批有事件的channel , 然后从线程池请求一个工作线程来处理 , 工作线程和channel之间有个buffer , 两者通过buffer来读写数据 .  这个处理的过程中，工作线程要先读取数据，处理，再返回的，这是个同步的过程。
          2. 如果有1000个客户端 , 每秒有50个客户端来请求 , 那么这样服务端只用维护51个线程就行 . 而用BIO就得维护1000个线程.
 
-         ![NIO原理图](C:\Users\guozh\Desktop\java\石杉\NIO原理图.jpg)
+         ![NIO原理图](./src/main/resources/shishan/NIO原理图.jpg)
 
       3. AIO异步非阻塞 : 工作线程在读写数据的时候将操作交给系统内核来处理 , 等操作系统干完了来回调通知工作线程 . 
 
@@ -1847,7 +1847,7 @@
 
       1. 架构原理图
 
-         ![网络通信netty框架原理](C:\Users\guozh\Desktop\java\石杉\网络通信netty框架原理.jpg)
+         ![网络通信netty框架原理](./src/main/resources/shishan/网络通信netty框架原理.jpg)
 
       2. Reactor架构思想 . [文章链接](https://juejin.im/post/6844903702550020109#heading-11)
 
@@ -1866,7 +1866,7 @@
 
    3. 堆外内存(off-heap)
 
-      ![堆外内存原理图](C:\Users\guozh\Desktop\java\石杉\堆外内存原理图.jpg)
+      ![堆外内存原理图](./src/main/resources/shishan/堆外内存原理图.jpg)
 
       1. 申请堆外内存
 
@@ -1908,7 +1908,7 @@
 
          5. 一个从本地磁盘读取数据通过网络发送出去 , 用户态和内核态要发生4次切换 , 4次拷贝 , 让普通IO操作的性能比较低.
 
-            ![普通IO操作在OS层面过程](C:\Users\guozh\Desktop\java\石杉\普通IO操作在OS层面过程.jpg)
+            ![普通IO操作在OS层面过程](./src/main/resources/shishan/普通IO操作在OS层面过程.jpg)
 
       2. mmap内存映射技术优化IO
 
@@ -1921,7 +1921,7 @@
 
             省去了内核缓冲区和用户缓冲区之间的拷贝 , 所以叫零拷贝
 
-            ![零拷贝流程图](C:\Users\guozh\Desktop\java\石杉\零拷贝流程图.jpg)
+            ![零拷贝流程图](./src/main/resources/shishan/零拷贝流程图.jpg)
 
          2. kafka和tomcat都是用的零拷贝技术 , 只需要两次切换,两次拷贝就可以了.
 
@@ -1960,7 +1960,7 @@
 
       3. redis可弄多个集群,每个集群有一组master-slave主从架构 , 服务B注册时通过一段路由逻辑将数据写入某个集群 , 集群内部主从实时同步 , 保证高可用 . 服务A每次要从所有集群的master上面拉取 , 才能拿到完整的注册列表.
 
-         ![redis作为注册中心原理图](C:\Users\guozh\Desktop\java\石杉\redis作为注册中心原理图.png)
+         ![redis作为注册中心原理图](./src/main/resources/shishan/redis作为注册中心原理图.png)
 
    5. ZooKeeper
 
@@ -2135,7 +2135,7 @@
 
          5. 然后好友的时间线表里有新数据 , 好友的朋友圈就会展示红点 , 点开朋友圈详情页时 , 就会根据图片的url去CDN上拉取图片信息.
 
-            ![系统设计_朋友圈社交系统流程图](C:\Users\guozh\Desktop\java\石杉\系统设计_朋友圈社交系统流程图.jpg)
+            ![系统设计_朋友圈社交系统流程图](./src/main/resources/shishan/系统设计_朋友圈社交系统流程图.jpg)
 
       4. 微信朋友圈是如何对好友显示权限进行控制的
 
@@ -2979,7 +2979,7 @@
 
      秒杀系统设计: 流程图见processon
 
-    ![系统设计_秒杀系统设计流程](C:\Users\guozh\Desktop\java\石杉\系统设计_秒杀系统设计流程.jpg)
+    ![系统设计_秒杀系统设计流程](./src/main/resources/shishan/系统设计_秒杀系统设计流程.jpg)
 
     1. 秒杀url加密 , 防止别人提前拿到通过系统来请求.
 
