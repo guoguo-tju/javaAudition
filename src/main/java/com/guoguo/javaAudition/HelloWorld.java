@@ -61,6 +61,16 @@ public class HelloWorld {
 
         double cc = 0.03 - 0.02;
         System.out.println("cc = " + cc);
+
+
+        int countx = 0;
+        int x = 9999;
+        while(x > 0) {
+            countx++;
+            x = x&(x-1);
+        }
+
+        System.out.println(countx);
     }
 
 }
